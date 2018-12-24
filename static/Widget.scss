@@ -1,0 +1,91 @@
+.Widget {
+    background-color: #34495e;
+    padding: 1rem;
+}
+
+/* autoprefixer: off */
+@supports(display:grid) {
+    .Widget {
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto 1fr;
+        grid-template-areas: 
+            "header icons"
+            "stats graph"
+            "footer graph";
+    }
+}
+
+.Widget > .header {
+    grid-area: header;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.Widget > .header > .title {
+    font-size: 1.2em;
+}
+
+.Widget > .footer {
+    grid-area: footer;
+    padding-top: 0.5em;
+}
+
+.Widget .footer .upDate {
+    font-size: 0.8em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.Widget > .icons {
+    grid-area: icons;
+    text-align: right;
+}
+
+.Widget .icons .icon {
+    margin-left: 0.4em;
+}
+
+.Widget > .graph {
+    grid-area: graph;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+
+.Widget h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    line-height: 1;
+    text-overflow: ellipsis;
+}
+
+.Widget .Loading {
+    margin-left: 0.2rem;
+}
+
+.Widget > .stats {
+    grid-area: stats;
+    padding-top: 1rem;    
+    white-space: nowrap;
+}
+
+@media(max-width: 600px) {
+    .Widget .content {
+        padding-top: 0.25rem;
+    }
+}
+
+.Widget .on {
+    color: rgb(0,255,0);
+}
+
+.Widget .off {
+    color: red;
+}
+
+.Widget .dataOn {
+    color: greenyellow;
+}
