@@ -24,11 +24,16 @@ class AuthControls extends Component {
                 .then(user => {
                     this.setState({ userData: user.profile.data })
                     console.log("Welcome: " + user.profile.data);
+                    if (user.profile.data.email.indexOf("@medicmobile.org") < 0) {
+                        alert("Please sign in using Medic Mobile account.");
+                        authed = false;
+                        logout();
+                    }
                 })
                 .catch(function (err) {
                     console.log(err);
                     if (err.name === "StitchRedirectError" && err.message.indexOf("email domain not allowed")) {
-                        alert("Could not log in. Please make sure you are using your valid account.");
+                        alert("Could not log in. Please make sure you are using your Medic Mobile account.");
                         logout();
                     }
                 });
@@ -63,7 +68,7 @@ class AuthControls extends Component {
                 {!authed
                     ? <div className="login-links-panel">
                         <h2>Gateway Watcher</h2>
-                        <p>Please click below and sign in using your Google account.</p>
+                        <p>Please click below and sign in using your Medic Mobile account.</p>
                         <div
                             onClick={() => this.client.auth.loginWithRedirect(new GoogleRedirectCredential())}
                             className="signin-button"
