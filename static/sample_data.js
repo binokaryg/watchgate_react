@@ -9,7 +9,7 @@ export default{
 			battery: 100,
 			temp: 34,
 			wifi: "Mock",
-			plugged: true,
+			charging: true,
 			data: false,
 			wifiStrength: 3
 		}, {
@@ -22,7 +22,7 @@ export default{
 			battery: 27,
 			temp: 50,
 			wifi: "Mock",
-			plugged: false,
+			charging: false,
 			data: true,
 			wifiStrength: 1
 		}
@@ -30,443 +30,650 @@ export default{
 
 	recentData: [{
 			_id: "Rasuwa",
-			date: new Date(1534750368095),
-			balanceDate: new Date(1534793278312),
+			date: 0.2,
+			balanceDate: 1,
 			balance: null,
 			balanceDue: 1698,
 			balanceCredit: 6186,
 			remainingSMS: 100,
+			smsPackInfoDate: 1,
 			battery: 100,
 			temp: 34,
 			wifi: "Mock",
-			plugged: true,
+			charging: true,
 			data: false,
 			wifiStrength: 3,
 			carrier: 'Namaste',
-			lastSMSInDate: new Date(1534122240000),
+			lastSMSInDate: 4,
 			balanceTrend: [{
 					bal: 204,
-					date: new Date(1534822287169)
+					date: 1
 				}, {
-					bal: 6186,
-					date: new Date(1534807679232)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6240,
-					date: new Date(1534750367681)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 6223,
-					date: new Date(1534764578126)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 6186,
-					date: new Date(1534778878257)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 6186,
-					date: new Date(1534793278312)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
 		}, {
 			_id: "Sindhupalchowk",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 200,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 204,
+					date: 3
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 204,
+					date: 4
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Sunsari",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 300,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 926,
+					date: 3
+				}, {
+					sms: 926,
+					date: 5
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Arghakhachi",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 400,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 204,
+					date: 3
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 204,
+					date: 4
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 926,
+					date: 3
+				}, {
+					sms: 926,
+					date: 5
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Panchthar",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 204,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 204,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 204,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 204,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 204,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 926,
+					date: 5
+				}, {
+					sms: 926,
+					date: 9
+				}, {
+					sms: 926,
+					date: 13
+				}, {
+					sms: 926,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Dolpa",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Siraha",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Parsa",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Jhapa",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Mahottari",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Kailali",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
-		},
-		{
+		}, {
 			_id: "Dang",
-			date: new Date(1534745738847),
-			balanceDate: new Date(1534815834134),
-			balance: 5536,
-			balanceDue: null,
-			balanceCredit: null,
-			remainingSMS: 0,
-			battery: 27,
-			temp: 50,
+			date: 0.2,
+			balanceDate: 1,
+			balance: null,
+			balanceDue: 1698,
+			balanceCredit: 6186,
+			remainingSMS: 100,
+			smsPackInfoDate: 1,
+			battery: 100,
+			temp: 34,
 			wifi: "Mock",
-			plugged: false,
-			data: true,
-			wifiStrength: 1,
-			carrier: '',
-			lastSMSInDate: new Date(1534125440000),
+			charging: true,
+			data: false,
+			wifiStrength: 3,
+			carrier: 'Namaste',
+			lastSMSInDate: 4,
 			balanceTrend: [{
-					bal: 5536,
-					date: new Date(1534815834134)
+					bal: 204,
+					date: 1
 				}, {
-					bal: 5538,
-					date: new Date(1534801435418)
+					bal: 1186,
+					date: 5
 				}, {
-					bal: 6939,
-					date: new Date(1534743944341)
+					bal: 1240,
+					date: 9
 				}, {
-					bal: 5687,
-					date: new Date(1534758234226)
+					bal: 1223,
+					date: 13
 				}, {
-					bal: 5596,
-					date: new Date(1534772634796)
+					bal: 1186,
+					date: 17
 				}, {
-					bal: 5543,
-					date: new Date(1534787033649)
+					bal: 1186,
+					date: 21
+				}
+			],
+			smsPackTrend: [{
+					sms: 926,
+					date: 1
+				}, {
+					sms: 20,
+					date: 5
+				}, {
+					sms: 126,
+					date: 9
+				}, {
+					sms: 326,
+					date: 13
+				}, {
+					sms: 426,
+					date: 17
 				}
 			]
 		}

@@ -1,13 +1,14 @@
 .DateDisplay {
-    padding-top: 0.3em;
+    margin-top: -0.3em;
+    padding-left: 3em;
 }
 
-.DateDisplay .date{ 
-    font-size: 1rem;
+.DateDisplay .date{
+    font-size: 0.7rem;
 }
 .DateDisplay .icon {
     float: left;
     clear: left;
-    width: 3em;
-    font-size: 1rem;
+    width: 2em;
+    font-size: 0.8rem;
 }

@@ -38,20 +38,32 @@ class GatewayWidget extends Component {
         }
 
         return <div className="stats">
-            <BalanceDisplay
-                balance={this.props.balance}
-                balanceDue={this.props.balanceDue}
-                balanceCredit={this.props.balanceCredit}
-                postpaid={this.state.postpaid}
+            <div className="vitals">
+                <BalanceDisplay
+                    balance={this.props.balance}
+                    balanceDue={this.props.balanceDue}
+                    balanceCredit={this.props.balanceCredit}
+                    postpaid={this.state.postpaid}
+                    getColor={this.props.getColorForPercentage}
+                    safeBalance={this.props.settings.safeBalance}
+                />
+                <DateDisplay date={this.props.balanceDate} dateFor="Balance" getColorForDate={this.props.getColorForDate} />
+                <SMSPackDisplay smsRemaining={this.props.smsRemaining} smsPackInfoDate={this.props.smsPackInfoDate} getColor={this.props.getColorForPercentage} />
+                <DateDisplay date={this.props.smsPackInfoDate} dateFor="SMS Pack" getColorForDate={this.props.getColorForDate} />
+                <WifiDisplay wifi={this.props.wifi} wifiStrength={this.props.wifiStrength} getColor={this.props.getColorForPercentage} />
+                <BatteryDisplay battery={this.props.battery} getColor={this.props.getColorForPercentage} />
+                <TempDisplay temp={this.props.temp} getColor={this.props.getColorForPercentage} />
+                {/* Conditionally show the progress bar */}
+            </div>
+
+            <InnerGraph
+                balanceData={this.props.balanceTrend}
+                smsData={this.props.smsPackTrend}
+                id={this.props.heading}
                 getColor={this.props.getColorForPercentage}
-                safeBalance={this.props.settings.safeBalance}
+                settings={this.props.settings}
+                maxBalance={this.props.maxBalance}
             />
-            <SMSPackDisplay smsRemaining={this.props.smsRemaining} getColor={this.props.getColorForPercentage} />
-            <DateDisplay date={this.props.balanceDate} getColorForDate={this.props.getColorForDate} />
-            <WifiDisplay wifi={this.props.wifi} wifiStrength={this.props.wifiStrength} getColor={this.props.getColorForPercentage} />
-            <BatteryDisplay battery={this.props.battery} getColor={this.props.getColorForPercentage} />
-            <TempDisplay temp={this.props.temp} getColor={this.props.getColorForPercentage} />
-            {/* Conditionally show the progress bar */}
         </div>
     }
 
@@ -70,14 +82,10 @@ class GatewayWidget extends Component {
                     lastSMSInDate={this.props.lastSMSInDate}
                     getColor={this.props.getColorForPercentage}
                     getColorForDate={this.props.getColorForDate}
+                    balanceData={this.props.balanceTrend}
+                    smsData={this.props.smsPackTrend}
                 >
                     {this.showWidget()}
-                    <InnerGraph
-                        data={this.props.balanceTrend}
-                        id={this.props.heading}
-                        getColor={this.props.getColorForPercentage}
-                        settings={this.props.settings}
-                    />
                 </Widget>
             </div>
         );
@@ -94,6 +102,7 @@ GatewayWidget.propTypes = {
     balanceDue: PropTypes.number,
     balanceCredit: PropTypes.number,
     smsRemaining: PropTypes.number,
+    smsPackInfoDate: PropTypes.object,
     plugged: PropTypes.bool,
     wifi: PropTypes.string,
     wifiStrength: PropTypes.number,
@@ -104,9 +113,11 @@ GatewayWidget.propTypes = {
     data: PropTypes.bool,
     carrier: PropTypes.string,
     balanceTrend: PropTypes.arrayOf(PropTypes.object),
+    smsPackTrend: PropTypes.arrayOf(PropTypes.object),
     lastSMSInDate: PropTypes.object,
     getColorForPercentage: PropTypes.func,
-    getColorForDate: PropTypes.func
+    getColorForDate: PropTypes.func,
+    maxBalance: PropTypes.number
 }
 
 

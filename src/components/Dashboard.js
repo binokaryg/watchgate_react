@@ -8,12 +8,12 @@ import sampleData from '../../static/sample_data.js';
 import GatewayWidgetContainer from '../components/GatewayWidgetContainer';
 import TimeAgo from 'react-timeago';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCoins, faPlug, faWifi, faClock, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Circle } from 'rc-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ErrorReload from './ErrorReload';
 
-library.add(faCoins, faPlug, faWifi, faClock, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope);
+library.add(faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock);
 
 class Dashboard extends Component {
     getColorForPercentage(percent) {
@@ -51,13 +51,41 @@ class Dashboard extends Component {
         window.location.reload();
     }
 
+    traverse(object, func, key, offset) {
+        for (var i in object) {
+            func.apply(this, [object, i, key, offset]);
+            if (object[i] !== null && typeof (object[i]) == "object") {
+                //going one step down in the object tree!!
+                this.traverse(object[i], func, key, offset);
+            }
+        }
+    }
+
+    resetDate(object, key, keyToChange, refDate) {
+        if (key === keyToChange) {
+            var hrs = object[key];
+            var date = new Date(refDate - hrs * 60 * 60 * 1000);
+            object[key] = date;
+            //console.log(key, keyToChange, refDate, hrs, date);
+        }        
+    }
+
+    setDate(data, newReferenceDate) {
+        // Sets the newDate as the form's reported date, and modifies other dates in doc by the same offset
+        this.traverse(data, this.resetDate, "date", newReferenceDate);
+        this.traverse(data, this.resetDate, "balanceDate", newReferenceDate);
+        this.traverse(data, this.resetDate, "lastSMSInDate", newReferenceDate);
+        this.traverse(data, this.resetDate, "smsPackInfoDate", newReferenceDate);
+    }
+
     loadGatewayStatus() {
 
         this.setState({ loading: true });
         if (this.state.mock) {
             const resultJSON = sampleData.recentData;
+            this.setDate(resultJSON, new Date());
             /* ES5 */
-            var successful = Math.random() > 0.5 ? true : false;
+            var successful = true; // Math.random() > 0.5 ? true : false;
             // Promise
             var getMockData = new Promise(
                 function (resolve, reject) {
@@ -75,7 +103,7 @@ class Dashboard extends Component {
             return getMockData.then(docs => {
                 console.log(`Data: ${JSON.stringify(docs)}`);
                 setTimeout(function () {
-                    obj.setState({ gateways: docs, requestPending: false });
+                    obj.setState({ gateways: docs, requestPending: false, maxBalance: getMaxBalanceFromData(docs) });
                     obj.setState({ loading: false, lastUpdate: new Date() });
                 }, (3 * 1000)); //add 3 sec delay
             })
@@ -91,10 +119,11 @@ class Dashboard extends Component {
                 return this.loadGatewayUnavailableStatus();
             }
             let obj = this;
-            return this.client.callFunction("getRecentStatusForAll3").then(docs => {
+            return this.client.callFunction("getRecentStatusForAll4").then(docs => {
                 //console.log(`Balance: ${JSON.stringify(docs)}`);
+                docs.sort(function (a, b) { return (a._id.toLowerCase() > b._id.toLowerCase()) ? 1 : ((b._id.toLowerCase() > a._id.toLowerCase()) ? -1 : 0)});
                 obj.setState({ gateways: docs, requestPending: false });
-                this.setState({ loading: false, lastUpdate: new Date() });
+                obj.setState({ loading: false, lastUpdate: new Date(), maxBalance: getMaxBalanceFromData(docs) });
 
             })
 
@@ -128,6 +157,7 @@ class Dashboard extends Component {
             loading: false,
             lastUpdate: new Date(),
             mock: false,
+            maxBalance: 10000,
             showReloadPopup: false
         };
         this.client = props.client;
@@ -206,6 +236,7 @@ class Dashboard extends Component {
                                     getColorForPercentage={this.getColorForPercentage}
                                     getColorForDate={this.getColorForDate}
                                     settings={this.props.settings}
+                                    maxBalance={this.state.maxBalance}
                                 />
                             );
                         })}
@@ -238,6 +269,26 @@ var getColorForPercent = function (pct) {
         return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
         // or output as hex if preferred
     }
+}
+
+var getMaxBalanceFromData = function (data) {
+    var max = 0;
+    //console.log("data", data);
+    data.forEach(function (gateway) {
+        //console.log("gateway", gateway);
+        gateway.balanceTrend.forEach(function (balanceInfo) {
+            //console.log(balanceInfo);
+            if (max < balanceInfo.y) {
+                max = balanceInfo.y;
+            }
+
+            else if (max < balanceInfo.bal) {
+                max = balanceInfo.bal
+            }
+        });
+    });
+    //console.log("max", max);
+    return Math.min(max, 5000);
 }
 
 var percentColors = [

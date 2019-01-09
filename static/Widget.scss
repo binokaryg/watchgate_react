@@ -11,8 +11,8 @@
         grid-template-rows: auto 1fr;
         grid-template-areas: 
             "header icons"
-            "stats graph"
-            "footer graph";
+            "stats stats"
+            "footer activity";
     }
 }
 
@@ -37,6 +37,11 @@
     overflow: hidden;
 }
 
+.Widget .activity {
+    grid-area: activity;
+    padding-top: 0.5em;
+    text-align: right;
+}
 .Widget > .icons {
     grid-area: icons;
     text-align: right;
@@ -44,10 +49,6 @@
 
 .Widget .icons .icon {
     margin-left: 0.4em;
-}
-
-.Widget > .graph {
-    grid-area: graph;
 }
 
 .invisible {

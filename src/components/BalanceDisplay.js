@@ -20,8 +20,8 @@ class BalanceDisplay extends Component {
             balanceText =
             <span className="balance"
             style={{color: this.getColorForBalance(this.props.balanceCredit, this.props.safeBalance)}}
-            title = {'Due: ' + String.fromCodePoint(0x930, 0x941) + this.props.balanceDue}>
-            Credit: {String.fromCodePoint(0x930, 0x941) + " " + this.props.balanceCredit}
+            title = {'Postpaid Due: ' + String.fromCodePoint(0x930, 0x941) + this.props.balanceDue}>
+            {String.fromCodePoint(0x930, 0x941) + ". " + this.props.balanceCredit}
             </span>;
         }
         else {

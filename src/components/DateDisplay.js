@@ -10,13 +10,10 @@ import TimeAgo from 'react-timeago'
 class DateDisplay extends Component {
     render() {
         return (
-            <div className="DateDisplay" title={'Balance last updated on ' + new Date(this.props.date).toString()}>
-                
-            <FontAwesomeIcon icon="clock" className="icon"  style={{ color: this.props.getColorForDate(this.props.date, 8*60*60*1000) }}/>
-                <TimeAgo className="date" date={this.props.date} title={'Balance last updated on ' + new Date(this.props.date).toString()}/>
-                
+            <div className="DateDisplay" title={this.props.dateFor + ' info last updated on ' + new Date(this.props.date).toString()}>
+                <TimeAgo className="date" date={this.props.date} style={{ color: this.props.getColorForDate(this.props.date, 8 * 60 * 60 * 1000) }} title={this.props.dateFor + ' info last updated on ' + new Date(this.props.date).toString()} />
             </div>
-            
+
         );
     }
 }
@@ -24,7 +21,8 @@ class DateDisplay extends Component {
 // Enforce the type of props to send to this component
 DateDisplay.propTypes = {
     date: PropTypes.object,
-    getColorForDate: PropTypes.func
+    getColorForDate: PropTypes.func,
+    dateFor: PropTypes.string
 }
 
 export default DateDisplay;

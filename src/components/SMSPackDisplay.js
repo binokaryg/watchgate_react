@@ -31,6 +31,7 @@ class SMSPackDisplay extends Component {
 // Enforce the type of props to send to this component
 SMSPackDisplay.propTypes = {
     smsRemaining: PropTypes.number,
+    smsPackInfoDate: PropTypes.object,
     getColor: PropTypes.func
 }
 

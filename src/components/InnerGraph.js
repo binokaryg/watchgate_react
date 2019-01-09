@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import cloneDeep from 'lodash/cloneDeep';
 
 //Import graphing component
 import { Line } from 'react-chartjs-2';
@@ -15,6 +15,7 @@ class InnerGraph extends Component {
         });
         return colorArray;
     }
+
     constructor(props) {
         super(props);
 
@@ -39,12 +40,26 @@ class InnerGraph extends Component {
                     titleFontSize: 10,
                     bodyFontSize: 12
                 },
+                hover: {
+                    mode: 'nearest', // only hovers items under the mouse
+                    intersect: false
+                },
                 scales: {
                     xAxes: [{
                         type: 'time',
+                        time: {
+                            unit: 'hour',
+                            displayFormats: {
+                                'hour': 'HH:MM'
+                            }
+                        },
                         ticks: {
                             source: 'data',
+                            autoSkip: true,
+                            autoSkipPadding: 1,
                             maxTicksLimit: 3,
+                            maxRotation: 0,
+                            minRotation: 0,
                             fontFamily: "'Didact Gothic', sans-serif",
                             fontSize: 8,
                             fontColor: "#ecf0f1"
@@ -54,16 +69,44 @@ class InnerGraph extends Component {
                         }
                     }],
                     yAxes: [{
+                        id: 'balance',
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Balance'
+                        },
                         ticks: {
                             fontFamily: "'Didact Gothic', sans-serif",
                             fontSize: 8,
                             fontColor: "#ecf0f1",
-                            maxTicksLimit: 3
+                            maxTicksLimit: 3,
+                            beginAtZero: true,
+                            suggestedMax: props.maxBalance
                         },
                         display: true,
                         gridLines: {
                             display: true,
-                            drawBorder: true,
+                            drawBorder: true
+                        }
+                    },
+                    {
+                        id: 'sms',
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'SMS Pack'
+                        },
+                        ticks: {
+                            fontFamily: "'Didact Gothic', sans-serif",
+                            fontSize: 8,
+                            fontColor: "#ecf0f1",
+                            maxTicksLimit: 3,
+                            beginAtZero: true,
+                            suggestedMax: 1000
+                        },
+                        display: true,
+                        position: 'right',
+                        gridLines: {
+                            display: true,
+                            drawBorder: true
                         }
                     }],
                 },
@@ -77,7 +120,9 @@ class InnerGraph extends Component {
 
     // Update the state based on changing props
     componentWillReceiveProps(nextProps) {
-        if (this.props.data !== nextProps.data || this.props.settings.safeBalance != nextProps.settings.safeBalance) {
+        if (this.props.balanceData !== nextProps.balanceData ||
+            this.props.smsData !== nextProps.smsData ||
+            this.props.settings.safeBalance != nextProps.settings.safeBalance) {
             //Only update if the data has actually changed
             this.generateDatasets(nextProps);
         }
@@ -92,32 +137,67 @@ class InnerGraph extends Component {
         let datasets = [];
         let chartOptions = this.state.chartOptions;
 
-        //Create a dataset object that Chart.js to understand
-        var balanceTrend = props.data;
+        //Create a dataset object that Chart.js can understand
+        var balanceTrend = cloneDeep(props.balanceData);
+        var smsTrend = cloneDeep(props.smsData);
+        var maxBalance = props.maxBalance;
 
-        balanceTrend.forEach(function (balanceInfo) {
-            if (balanceInfo.x == null && balanceInfo.y == null) {//don't change if already present
-                balanceInfo.x = balanceInfo.date;
-                balanceInfo.y = balanceInfo.bal;
-                delete balanceInfo.bal;
-                delete balanceInfo.date;
-            }
-        });
-        balanceTrend.sort(function (a, b) { return a.x - b.x });
+        if (balanceTrend) {
 
-        datasets.push({
-            label: 'Balance',
-            data: balanceTrend,
-            fill: false,
-            tension: 0,
-            borderColor: '#0493f2',
-            borderWidth: 2,
-            pointRadius: 3,
-            pointHitRadius: 10,
-            pointBackgroundColor: this.getColorForBalanceTrend(this.props.getColor, balanceTrend, props.settings.safeBalance),
-            pointBorderColor: 'white',
-            pointBorderWidth: 1
-        });
+            balanceTrend.forEach(function (balanceInfo) {
+                if (balanceInfo.x == null && balanceInfo.y == null) {//don't change if already present
+                    balanceInfo.x = balanceInfo.date;
+                    balanceInfo.y = balanceInfo.bal;
+                    delete balanceInfo.bal;
+                    delete balanceInfo.date;
+                }
+            });
+            balanceTrend.sort(function (a, b) { return a.x - b.x });
+
+            datasets.push({
+                label: 'Balance',
+                yAxisID: 'balance',
+                data: balanceTrend,
+                fill: false,
+                tension: 0,
+                borderColor: '#0493f2',
+                borderWidth: 1,
+                pointRadius: 2,
+                pointHitRadius: 6,
+                pointBackgroundColor: this.getColorForBalanceTrend(this.props.getColor, balanceTrend, props.settings.safeBalance),
+                pointBorderColor: 'white',
+                pointBorderWidth: 1
+            });
+        }
+        if (smsTrend) {
+            smsTrend.forEach(function (smsInfo) {
+                if (smsInfo.x == null && smsInfo.y == null) {//don't change if already present
+                    smsInfo.x = smsInfo.date;
+                    smsInfo.y = smsInfo.sms;
+                    delete smsInfo.sms;
+                    delete smsInfo.date;
+                }
+            });
+            smsTrend.sort(function (a, b) { return a.x - b.x });
+            //console.log(smsTrend);
+            datasets.push({
+                label: 'SMS',
+                yAxisID: 'sms',
+                data: smsTrend,
+                fill: false,
+                tension: 0,
+                borderColor: '#9604f2',
+                borderWidth: 1,
+                pointRadius: 2,
+                pointHitRadius: 6,
+                pointBackgroundColor: this.getColorForBalanceTrend(this.props.getColor, smsTrend, 300),
+                pointBorderColor: 'white',
+                pointBorderWidth: 1
+            });
+
+        }
+        //console.log(maxBalance);
+        chartOptions.scales.yAxes[0].ticks.suggestedMax = maxBalance;
 
         //Let the React wrapper for Chart.js update the view
         this.setState({
@@ -139,8 +219,10 @@ class InnerGraph extends Component {
 
 // Enforce the type of props to send to this component
 InnerGraph.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.object),
-    getColor: PropTypes.func
+    balanceData: PropTypes.arrayOf(PropTypes.object),
+    smsData: PropTypes.arrayOf(PropTypes.object),
+    getColor: PropTypes.func,
+    maxBalance: PropTypes.number
 }
 
 export default InnerGraph;

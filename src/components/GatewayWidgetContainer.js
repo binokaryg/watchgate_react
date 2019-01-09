@@ -28,6 +28,7 @@ class GatewayWidgetContainer extends Component {
                 balanceDue={this.props.statusinfo.balanceDue}
                 balanceCredit={this.props.statusinfo.balanceCredit}
                 smsRemaining={this.props.statusinfo.remainingSMS}
+                smsPackInfoDate={this.props.statusinfo.smsPackInfoDate}
                 loading={this.props.loading}
                 plugged={this.props.statusinfo.charging}
                 wifi={this.props.statusinfo.wifi}
@@ -40,9 +41,11 @@ class GatewayWidgetContainer extends Component {
                 getColorForPercentage={this.props.getColorForPercentage}
                 getColorForDate={this.props.getColorForDate}
                 balanceTrend={this.props.statusinfo.balanceTrend}
+                smsPackTrend={this.props.statusinfo.smsPackTrend}
                 carrier={this.props.statusinfo.carrier}
                 lastSMSInDate={this.props.statusinfo.lastSMSInDate}
                 settings={this.props.settings}
+                maxBalance={this.props.maxBalance}
                 />
         );
     }
@@ -57,7 +60,8 @@ GatewayWidgetContainer.propTypes = {
     statusinfo: PropTypes.object,
     loading: PropTypes.bool,
     getColorForPercentage: PropTypes.func,
-    getColorForDate: PropTypes.func
+    getColorForDate: PropTypes.func,
+    maxBalance: PropTypes.number
 }
 
 export default GatewayWidgetContainer;
