@@ -44,8 +44,10 @@ class GatewayWidgetContainer extends Component {
                 smsPackTrend={this.props.statusinfo.smsPackTrend}
                 carrier={this.props.statusinfo.carrier}
                 lastSMSInDate={this.props.statusinfo.lastSMSInDate}
+                controls={this.props.controlinfo}
                 settings={this.props.settings}
                 maxBalance={this.props.maxBalance}
+                requestFCM={this.props.requestFCM}
                 />
         );
     }
@@ -58,10 +60,13 @@ GatewayWidgetContainer.propTypes = {
     rowspan: PropTypes.number,
     gatewayinfo: PropTypes.object,
     statusinfo: PropTypes.object,
+    controlinfo: PropTypes.array,
     loading: PropTypes.bool,
+    settings: PropTypes.object,    
     getColorForPercentage: PropTypes.func,
     getColorForDate: PropTypes.func,
-    maxBalance: PropTypes.number
+    maxBalance: PropTypes.number,
+    requestFCM: PropTypes.func
 }
 
 export default GatewayWidgetContainer;

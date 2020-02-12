@@ -11,6 +11,7 @@ import InnerGraph from './InnerGraph';
 //Import styling
 import '../../static/GatewayWidget.scss';
 import SMSPackDisplay from './SMSPackDisplay';
+import Button from './UIControls/Button';
 
 
 
@@ -80,10 +81,13 @@ class GatewayWidget extends Component {
                     date={this.props.date}
                     carrier={this.props.carrier}
                     lastSMSInDate={this.props.lastSMSInDate}
+                    controls={this.props.controls}
+                    settings={this.props.settings}
                     getColor={this.props.getColorForPercentage}
                     getColorForDate={this.props.getColorForDate}
                     balanceData={this.props.balanceTrend}
                     smsData={this.props.smsPackTrend}
+                    requestFCM={this.props.requestFCM}
                 >
                     {this.showWidget()}
                 </Widget>
@@ -115,9 +119,12 @@ GatewayWidget.propTypes = {
     balanceTrend: PropTypes.arrayOf(PropTypes.object),
     smsPackTrend: PropTypes.arrayOf(PropTypes.object),
     lastSMSInDate: PropTypes.object,
+    controls: PropTypes.array,
+    settings: PropTypes.object,
     getColorForPercentage: PropTypes.func,
     getColorForDate: PropTypes.func,
-    maxBalance: PropTypes.number
+    maxBalance: PropTypes.number,
+    requestFCM: PropTypes.func
 }
 
 

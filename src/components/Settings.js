@@ -4,6 +4,7 @@ import Button from './UIControls/Button';
 import CheckBox from './UIControls/Checkbox';
 import '../../static/Settings.scss';
 import TextInput from './UIControls/TextInput';
+import TextArea from './UIControls/TextArea';
 class Settings extends Component {
     constructor(props, context) {
         super(props, context);
@@ -25,9 +26,17 @@ class Settings extends Component {
                         />
                         <TextInput
                             label="Safe Balance (Rs)"
-                            safeBalance={this.props.settings.safeBalance}
-                            validRegex={/^$|[0-9]$/}
+                            value={this.props.settings.safeBalance}
+                            maxLength={6}
+                            validRegex={'^[0-9]*$'}
                             onChange={this.props.handleSafeBalanceChange}
+                            required
+                        />
+                        <TextArea
+                            label="Notification URL"
+                            value={this.props.settings.notificationURL}
+                            maxLength={255}
+                            onChange={this.props.handleNotificationURLChange}
                         />
                         <div className="ok">
                             <Button onClick={this.props.closePopup} label={"OK"}></Button>
@@ -47,7 +56,8 @@ Settings.propTypes = {
     toggleBalanceTrend: PropTypes.func,
     handleSettingsChange: PropTypes.func,
     handleCheckBoxChange: PropTypes.func,
-    handleSafeBalanceChange: PropTypes.func
+    handleSafeBalanceChange: PropTypes.func,
+    handleNotificationURLChange: PropTypes.func
 }
 
 export default Settings;

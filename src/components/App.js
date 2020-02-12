@@ -9,6 +9,8 @@ import {
     RemoteMongoClient,
     GoogleRedirectCredential
 } from "mongodb-stitch-browser-sdk";
+import { isNull } from 'util';
+
 
 //TODO: add your MongoDB stitch app id here
 let appId = "<stitch-app-id>";
@@ -29,17 +31,32 @@ let gateways = db.collection("gateways");
 class App extends Component {
     constructor(props) {
         super(props);
-
+        let showBalanceTrend = true;
+        let safeBalance = 3000;
+        let notificationURL = '';
+        try {
+            showBalanceTrend = localStorage.getItem("showBalanceTrend") == "false" ? false : true;
+            notificationURL = localStorage.getItem("notificationURL");
+            safeBalance = parseInt(localStorage.getItem("safeBalance"));
+            if (isNaN(safeBalance) || isNull(safeBalance)) {
+                safeBalance = 3000;
+            }
+        }
+        catch (exc) {
+            console.log(`Could not get from local storage: ${exc}`);
+        }
         this.state = {
-            settings: { showBalanceTrend: true, safeBalance: 3000 },
-            showPopup: false
+            settings: { showBalanceTrend, safeBalance, notificationURL },
+            showPopup: false,
+            username: 'Unregistered user'
         };
         this.client = client;
         this.gateways = gateways;
         this.applySettings = this.applySettings.bind(this);
         this.toggleBalanceTrend = this.toggleBalanceTrend.bind(this);
         this.handleSafeBalanceChange = this.handleSafeBalanceChange.bind(this);
-    }    
+        this.handleNotificationURLChange = this.handleNotificationURLChange.bind(this);
+    }
 
     togglePopup() {
         this.setState({
@@ -60,12 +77,27 @@ class App extends Component {
             settings.showBalanceTrend = !settings.showBalanceTrend;
         }
         this.setState({ settings });
+        localStorage.setItem("showBalanceTrend", settings.showBalanceTrend.toString());
     }
 
     handleSafeBalanceChange(balance) {
         let settings = Object.assign({}, this.state.settings);
         settings.safeBalance = parseInt(balance);
-        this.setState({settings});
+        this.setState({ settings });
+        localStorage.setItem("safeBalance", balance);
+        //console.log("balance set", balance);
+    }
+
+    handleNotificationURLChange(url) {
+        let settings = Object.assign({}, this.state.settings);
+        settings.notificationURL = url;
+        this.setState({ settings });
+        localStorage.setItem("notificationURL", url);
+        //console.log("notification url set", url);
+    }
+
+    updateUserName(name) {
+        this.setState({ username: name });
     }
 
     render() {
@@ -74,7 +106,8 @@ class App extends Component {
                 <AuthControls
                     client={this.client}
                     togglePopup={this.togglePopup.bind(this)}
-                    >
+                    updateUserName={this.updateUserName.bind(this)}
+                >
 
                     {this.state.showPopup ?
                         <Settings
@@ -85,6 +118,7 @@ class App extends Component {
                             handleSettingsChange={this.applySettings}
                             handleCheckBoxChange={this.handleCheckBoxChange}
                             handleSafeBalanceChange={this.handleSafeBalanceChange}
+                            handleNotificationURLChange={this.handleNotificationURLChange}
                         />
                         : null
                     }
@@ -92,7 +126,8 @@ class App extends Component {
                 <Dashboard
                     client={this.client}
                     gateways={this.gateways}
-                    settings={this.state.settings} />
+                    settings={this.state.settings}
+                    username={this.state.username} />
             </div>
         );
     }

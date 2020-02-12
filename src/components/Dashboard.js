@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 
 // Import widgets being used in this component
 
@@ -8,14 +9,36 @@ import sampleData from '../../static/sample_data.js';
 import GatewayWidgetContainer from '../components/GatewayWidgetContainer';
 import TimeAgo from 'react-timeago';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock, faSyringe, faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
 import { Circle } from 'rc-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ErrorReload from './ErrorReload';
 
-library.add(faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock);
+library.add(faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock, faSyringe, faMoneyCheck);
 
 class Dashboard extends Component {
+
+    requestFCM = (instance, task) => {
+        let request = `${this.props.settings.notificationURL}?topic=${instance}&title=${task}&body=${encodeURI("Requested by " + this.props.username)}`;
+        //console.log(request);
+        let validURLRegex = '^(https?:\\/\\/)?' + // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$'
+        let check = new RegExp(validURLRegex, 'i');
+        if (check.test(request)) {
+            axios.get(request)
+                .then(res => {
+                    console.log(res);
+                    alert(res.data);
+                })
+        }
+        else {
+            console.log(`URL validation failed: ${request}`)
+        }
+    }
     getColorForPercentage(percent) {
         return getColorForPercent(percent);
     }
@@ -34,20 +57,21 @@ class Dashboard extends Component {
         return getColorForPercent(percent);
     }
 
-    showPopup() {
+    showErrorPopup() {
         this.setState({
             showReloadPopup: true
         });
     }
 
-    closePopup() {
+    closeErrorPopup() {
         this.setState({
             showReloadPopup: false
         });
     }
 
+
     closePopupAndReload() {
-        this.closePopup();
+        this.closeErrorPopup();
         window.location.reload();
     }
 
@@ -67,7 +91,7 @@ class Dashboard extends Component {
             var date = new Date(refDate - hrs * 60 * 60 * 1000);
             object[key] = date;
             //console.log(key, keyToChange, refDate, hrs, date);
-        }        
+        }
     }
 
     setDate(data, newReferenceDate) {
@@ -76,6 +100,56 @@ class Dashboard extends Component {
         this.traverse(data, this.resetDate, "balanceDate", newReferenceDate);
         this.traverse(data, this.resetDate, "lastSMSInDate", newReferenceDate);
         this.traverse(data, this.resetDate, "smsPackInfoDate", newReferenceDate);
+    }
+
+    loadUserAdminInstances() {
+        this.setState({ loading: true });
+        if (this.state.mock) {
+            const userJSON = sampleData.userData;
+            /* ES5 */
+            var successful = true; // Math.random() > 0.5 ? true : false;
+            // Promise
+            var getMockUser = new Promise(
+                function (resolve, reject) {
+                    if (successful) {
+                        var result = userJSON;
+                        resolve(result); // fulfilled
+                    } else {
+                        var reason = new Error('not happy');
+                        reject(reason); // reject
+                    }
+                }
+            );
+
+            let obj = this;
+            return getMockUser.then(user => {
+                //console.log(`Data: ${JSON.stringify(user)}`);
+                setTimeout(function () {
+                    obj.setState({ instances: user[0].admin });
+                }, (3 * 1000)); //add 3 sec delay
+            })
+
+                .catch(ex => {
+                    console.error("Error while loading user instances: " + ex.message);
+                    this.showErrorPopup();
+                });
+        }
+
+        else {
+            if (!this.client.auth.isLoggedIn) {
+                return this.loadGatewayUnavailableStatus();
+            }
+            let obj = this;
+            return this.client.callFunction("getAdminInstancesForUser").then(docs => {
+                //console.log(`Balance: ${JSON.stringify(docs)}`);
+                obj.setState({ instances: docs, requestPending: false });
+            })
+
+                .catch(ex => {
+                    console.error("Error while loading user instances: " + ex.message);
+                    this.showErrorPopup();
+                });
+        }
     }
 
     loadGatewayStatus() {
@@ -101,7 +175,7 @@ class Dashboard extends Component {
 
             let obj = this;
             return getMockData.then(docs => {
-                console.log(`Data: ${JSON.stringify(docs)}`);
+                //console.log(`Data: ${JSON.stringify(docs)}`);
                 setTimeout(function () {
                     obj.setState({ gateways: docs, requestPending: false, maxBalance: getMaxBalanceFromData(docs) });
                     obj.setState({ loading: false, lastUpdate: new Date() });
@@ -110,7 +184,7 @@ class Dashboard extends Component {
 
                 .catch(ex => {
                     console.error("Error while loading status: " + ex.message);
-                    this.showPopup();
+                    this.showErrorPopup();
                 });
         }
 
@@ -119,9 +193,9 @@ class Dashboard extends Component {
                 return this.loadGatewayUnavailableStatus();
             }
             let obj = this;
-            return this.client.callFunction("getRecentStatusForAll4").then(docs => {
+            return this.client.callFunction("getRecentStatusForUserContext").then(docs => {
                 //console.log(`Balance: ${JSON.stringify(docs)}`);
-                docs.sort(function (a, b) { return (a._id.toLowerCase() > b._id.toLowerCase()) ? 1 : ((b._id.toLowerCase() > a._id.toLowerCase()) ? -1 : 0)});
+                docs.sort(function (a, b) { return (a._id.toLowerCase() > b._id.toLowerCase()) ? 1 : ((b._id.toLowerCase() > a._id.toLowerCase()) ? -1 : 0) });
                 obj.setState({ gateways: docs, requestPending: false });
                 obj.setState({ loading: false, lastUpdate: new Date(), maxBalance: getMaxBalanceFromData(docs) });
 
@@ -129,7 +203,7 @@ class Dashboard extends Component {
 
                 .catch(ex => {
                     console.error("Error while loading status: " + ex.message);
-                    this.showPopup();
+                    this.showErrorPopup();
                 });
         }
 
@@ -154,6 +228,7 @@ class Dashboard extends Component {
 
         this.state = {
             gateways: [],
+            instances: [],
             loading: false,
             lastUpdate: new Date(),
             mock: false,
@@ -162,6 +237,7 @@ class Dashboard extends Component {
         };
         this.client = props.client;
         this.gateways = props.gateways;
+        this.loadUserAdminInstances = this.loadUserAdminInstances.bind(this);
         this.loadGatewayStatus = this.loadGatewayStatus.bind(this);
     }
 
@@ -171,6 +247,8 @@ class Dashboard extends Component {
 
     componentDidMount() {
         //console.log(sampleData.oldData);
+        this.loadUserAdminInstances();
+
         this.loadGatewayStatus().then(_ => {
             // Re-fetch every 10 minutes
             this.interval = setInterval(this.loadGatewayStatus, updateDurationSec * 1000);
@@ -194,7 +272,7 @@ class Dashboard extends Component {
                 {this.state.showReloadPopup ?
                     <ErrorReload
                         text='Error'
-                        closePopup={this.closePopup.bind(this)}
+                        closePopup={this.closeErrorPopup.bind(this)}
                         reload={this.closePopupAndReload.bind(this)}
                     />
                     : null
@@ -219,26 +297,56 @@ class Dashboard extends Component {
                         </div>
                     </div>
                 </div>
-
+                {this.state.instances.length > 0 ?
+                    <div className="Dashboard" style={{ borderBottom: "1px solid #ccc" }}>
+                        {this.state.gateways.length == 0
+                            ? <div className="list-empty-label">Loading...</div>
+                            : this.state.gateways.map(gateway => {
+                                if (this.state.instances.includes(gateway._id.toLowerCase())) {
+                                    return (
+                                        <GatewayWidgetContainer
+                                            key={gateway._id}
+                                            heading={gateway._id}
+                                            statusinfo={gateway}
+                                            controlinfo={this.state.instances}
+                                            loading={this.state.loading}
+                                            colspan={1}
+                                            onChange={() => this.loadGatewayStatus()}
+                                            onStartChange={() => this.setPending()}
+                                            getColorForPercentage={this.getColorForPercentage}
+                                            getColorForDate={this.getColorForDate}
+                                            settings={this.props.settings}
+                                            maxBalance={this.state.maxBalance}
+                                            requestFCM={this.requestFCM}
+                                        />
+                                    );
+                                }
+                            })}
+                    </div> : null}
+                {this.state.instances.length > 0 ? <br /> : null}
                 <div className="Dashboard">
                     {this.state.gateways.length == 0
                         ? <div className="list-empty-label">Loading...</div>
                         : this.state.gateways.map(gateway => {
-                            return (
-                                <GatewayWidgetContainer
-                                    key={gateway._id}
-                                    heading={gateway._id}
-                                    statusinfo={gateway}
-                                    loading={this.state.loading}
-                                    colspan={1}
-                                    onChange={() => this.loadGatewayStatus()}
-                                    onStartChange={() => this.setPending()}
-                                    getColorForPercentage={this.getColorForPercentage}
-                                    getColorForDate={this.getColorForDate}
-                                    settings={this.props.settings}
-                                    maxBalance={this.state.maxBalance}
-                                />
-                            );
+                            if (!this.state.instances.includes(gateway._id.toLowerCase())) {
+                                return (
+                                    <GatewayWidgetContainer
+                                        key={gateway._id}
+                                        heading={gateway._id}
+                                        statusinfo={gateway}
+                                        controlinfo={this.state.instances}
+                                        loading={this.state.loading}
+                                        colspan={1}
+                                        onChange={() => this.loadGatewayStatus()}
+                                        onStartChange={() => this.setPending()}
+                                        getColorForPercentage={this.getColorForPercentage}
+                                        getColorForDate={this.getColorForDate}
+                                        settings={this.props.settings}
+                                        maxBalance={this.state.maxBalance}
+                                        requestFCM={this.requestFCM}
+                                    />
+                                );
+                            }
                         })}
                 </div>
             </div>

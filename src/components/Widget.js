@@ -17,7 +17,8 @@ class Widget extends Component {
 
         this.state = {
             lastSMSActivity: null,
-            lastBalanceActivity: null
+            lastBalanceActivity: null,
+            isMouseInside: false
         }
 
         // Create inline styles to make grid elements span multiple rows/columns
@@ -28,6 +29,13 @@ class Widget extends Component {
         if (props.rowspan !== 1) {
             this.spanStyles.gridRow = `span ${props.rowspan}`;
         }
+    }
+
+    mouseEnter = () => {
+        this.setState({ isMouseInside: true });
+    }
+    mouseLeave = () => {
+        this.setState({ isMouseInside: false });
     }
 
     // Update the state based on changing props
@@ -76,14 +84,31 @@ class Widget extends Component {
         return null;
     }
 
+    canControlInstance() {
+        return this.props.controls.includes(this.props.heading.toLowerCase());
+    }
+
     render() {
         let data = null;
         return (
-            <div style={this.spanStyles} className="Widget">
+            <div style={this.spanStyles} className="Widget" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
                 <div className="header">
                     <span className='title'>
                         {((typeof this.props.heading) == "string") ? this.props.heading.toUpperCase() : ""}
                     </span>
+                    {this.props.settings.notificationURL && this.canControlInstance() && this.props.settings.notificationURL.length > 5 && this.state.isMouseInside ?
+                        <div className="controls">
+                            <span className="icon" title="Check balance">
+                                <FontAwesomeIcon icon="sync" onClick={() => { if (window.confirm(`Are you sure you want to recheck ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'CHECK') } }} />
+                            </span>
+                            <span className="icon" title="Subscribe SMS pack">
+                                <FontAwesomeIcon icon="money-check" onClick={() => { if (window.confirm(`Are you sure you want to subscribe SMS packs in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'SUBSCRIBE') } }} />
+                            </span>
+                            <span className="icon" title="Attempt gateway refresh">
+                                <FontAwesomeIcon icon="syringe" onClick={() => { if (window.confirm(`Are you sure you want to restart gateway app in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'RESTART') } }} />
+                            </span>
+                        </div>
+                        : <div style={{visibility: "hidden"}}>&nbsp;</div>}
                 </div>
                 <div className="icons">
                     {this.props.data ? <span className="icon dataOn" title="Mobile Data On"><FontAwesomeIcon icon="exchange-alt" /></span> : ""}
@@ -100,13 +125,16 @@ class Widget extends Component {
                     </span>
                 </div>
                 <div className="activity"
-                    title={"Last SMS pack activity detected: " +
-                        (this.state.lastSMSActivity !== null ? "before " + new Date(this.state.lastSMSActivity.date).toString() : "never or long time ago") +
-                        "\nLast Balance activity detected: " +
-                        (this.state.lastBalanceActivity !== null ? "before " + new Date(this.state.lastBalanceActivity.date).toString() : "never or long time ago")
-                    }
                     style={{ color: this.props.getColorForDate(this.state.lastSMSActivity !== null ? this.state.lastSMSActivity.date : 0, 8 * 60 * 60 * 1000) }}>
-                    <FontAwesomeIcon icon="clock" />
+
+                    <span className="icon"
+                        title={"Last SMS pack activity detected: " +
+                            (this.state.lastSMSActivity !== null ? "before " + new Date(this.state.lastSMSActivity.date).toString() : "never or long time ago") +
+                            "\nLast Balance activity detected: " +
+                            (this.state.lastBalanceActivity !== null ? "before " + new Date(this.state.lastBalanceActivity.date).toString() : "never or long time ago")
+                        }>
+                        <FontAwesomeIcon icon="clock" />
+                    </span>
                 </div>
             </div>
         );
@@ -129,9 +157,12 @@ Widget.propTypes = {
     data: PropTypes.bool,
     date: PropTypes.object,
     lastSMSInDate: PropTypes.object,
+    controls: PropTypes.array,
+    settings: PropTypes.object,
     getColorForDate: PropTypes.func,
     balanceData: PropTypes.arrayOf(PropTypes.object),
-    smsData: PropTypes.arrayOf(PropTypes.object)
+    smsData: PropTypes.arrayOf(PropTypes.object),
+    requestFCM: PropTypes.func
 }
 
 export default Widget;

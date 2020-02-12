@@ -24,7 +24,8 @@ module.exports = {
 				exclude: /node_modules\/(?!(mongodb-extjson|bson))/,
 				loader: 'babel-loader',
 				query: {
-					presets: ['es2015', 'react']
+					presets: ['@babel/preset-env', '@babel/preset-react'],
+					plugins: ['@babel/plugin-proposal-class-properties']
 				}
 			}, {
 				test: /\.scss$/,

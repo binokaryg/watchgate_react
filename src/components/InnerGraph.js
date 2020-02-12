@@ -16,11 +16,14 @@ class InnerGraph extends Component {
         return colorArray;
     }
 
+
+
     constructor(props) {
         super(props);
 
         // Set the initial state for the graphing component
         this.state = {
+            shouldRedraw: false,
             values: {
                 //labels: ["24", "20", "16", "12", "8", "4"],
                 datasets: []
@@ -130,7 +133,22 @@ class InnerGraph extends Component {
 
     componentDidMount() {
         this.generateDatasets(this.props);
+        window.addEventListener("resize", this.setRedraw);
     }
+
+    /**
+   * Remove event listener
+   */
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.setRedraw);
+        this.setState({ shouldRedraw: false});
+    }
+
+    setRedraw = () => {
+        //console.log("set draw");
+        this.setState({ shouldRedraw: true });
+        this.setState({ shouldRedraw: false });
+    };
 
     //Convert the data received in props to a format the graphing component likes
     generateDatasets(props) {
@@ -211,7 +229,7 @@ class InnerGraph extends Component {
     render() {
         return (
             <div className={this.props.settings.showBalanceTrend ? "graph" : "graph invisible"}>
-                <Line ref="lineChart" data={this.state.values} options={this.state.chartOptions} width={100} height={50} />
+                <Line ref="lineChart" data={this.state.values} options={this.state.chartOptions} width={100} height={50} redraw = {this.state.shouldRedraw} />
             </div>
         );
     }

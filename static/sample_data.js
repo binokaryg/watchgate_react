@@ -29,7 +29,7 @@ export default{
 	],
 
 	recentData: [{
-			_id: "Rasuwa",
+			_id: "unnamed",
 			date: 0.2,
 			balanceDate: 1,
 			balance: null,
@@ -676,6 +676,16 @@ export default{
 					date: 17
 				}
 			]
+		}
+	],
+
+	userData: [
+		{
+			name: "Binod Adhikary",
+			email: "binokary@gmail.com",
+			instances: ["dang","kailali","sunsari"],
+			admin: ["kailali", "sunsari"]
+
 		}
 	]
 };

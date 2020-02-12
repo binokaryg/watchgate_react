@@ -6,6 +6,7 @@ import {
 } from "mongodb-stitch-browser-sdk";
 
 import Settings from './Settings';
+import { timingSafeEqual } from 'crypto';
 
 class AuthControls extends Component {
     constructor(props) {
@@ -16,6 +17,15 @@ class AuthControls extends Component {
         this.client = props.client;
     }
 
+    componentDidMount() {
+        if (this.client.auth.currentUser) {
+            let currentUserData = this.client.auth.currentUser.profile.data;
+            //console.log("user", userData);
+            this.setState({ userData: currentUserData});
+            this.props.updateUserName(currentUserData.name);
+        }
+    }
+
     render() {
         let authed = this.client.auth.isLoggedIn;
 
@@ -24,16 +34,18 @@ class AuthControls extends Component {
                 .then(user => {
                     this.setState({ userData: user.profile.data })
                     console.log("Welcome: " + user.profile.data);
+                    /* //Disabled to allow other users
                     if (user.profile.data.email.indexOf("@medicmobile.org") < 0) {
                         alert("Please sign in using Medic Mobile account.");
                         authed = false;
                         logout();
                     }
+                    */
                 })
                 .catch(function (err) {
                     console.log(err);
                     if (err.name === "StitchRedirectError" && err.message.indexOf("email domain not allowed")) {
-                        alert("Could not log in. Please make sure you are using your Medic Mobile account.");
+                        alert("Could not log in. Please make sure you are using a valid account.");
                         logout();
                     }
                 });
@@ -45,9 +57,6 @@ class AuthControls extends Component {
                 {authed
                     ? <div>
                         <div className="login-header">
-                            {this.state.userData && this.state.userData.picture
-                                ? <img src={this.state.userData.picture} className="profile-pic" />
-                                : null}
                             <span className="login-text">
                                 <span className="username">
                                     {this.state.userData && this.state.userData.name ? this.state.userData.name : "?"}

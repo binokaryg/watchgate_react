@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import '../../../static/TextInput.scss'
 
-class TextInput extends Component {
+class TextArea extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -13,10 +13,10 @@ class TextInput extends Component {
 
     render() {
         return (
-            <div className="TextInput">
+            <div className="TextArea">
                 <div className="Label">{this.props.label}</div>
                 <div className="Input">
-                    <input value={this.state.inputValue} onChange={evt => this.updateInputValue(evt, this.props.validRegex)} />
+                    <textarea rows="4" cols="30" value={this.state.inputValue} onChange={evt => this.updateInputValue(evt, this.props.validRegex)} />
                 </div>
                 <span className="Error">{this.state.errorMsg}</span>
             </div>
@@ -24,19 +24,15 @@ class TextInput extends Component {
     }
 
     updateInputValue(evt, pat) {
-        let check = new RegExp('^.*$'); //match anything
-        if (pat) {
-            check = new RegExp(pat, 'i');
-        }
-        if (evt.target.value.length < 1) {
+        let check = new RegExp(pat, 'i');
+        if (this.props.required && evt.target.value.length < 1) {
             this.setState({
                 inputValue: '',
                 errorMsg: 'Please enter a value.'
             });
             return;
         }
-
-        if ((!maxLength || evt.target.value.length < this.props.maxLength + 1) && (!pat || check.test(evt.target.value))) {
+        if ((!this.props.maxLength || evt.target.value.length < this.props.maxLength + 1) && (check.test(evt.target.value))) {
             this.setState({
                 inputValue: evt.target.value,
                 errorMsg: ''
@@ -50,14 +46,15 @@ class TextInput extends Component {
     }
 }
 
-TextInput.defaultProps = {
-    validRegex: '^[\s\S]*$' //match anything if not specified
+TextArea.defaultProps = {
+    validRegex: '^.*$' //match anything if not specified
 }
 // Enforce the type of props to send to this component
-TextInput.propTypes = {
+TextArea.propTypes = {
     validRegex: PropTypes.string,
     label: PropTypes.string,
     maxLength: PropTypes.number
 }
 
-export default TextInput;
+
+export default TextArea;
