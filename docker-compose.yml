@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  watchgate:
+    container_name: watchgate
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        #replace your-app-id below with the actual ID
+        - WATCHGATE_APP_ID=your-app-id
+    ports:
+      - 80:80

@@ -13,7 +13,7 @@ import { isNull } from 'util';
 
 
 //TODO: add your MongoDB stitch app id here
-let appId = "<stitch-app-id>";
+let appId = WATCHGATE_APP_ID;
 
 const client = Stitch.initializeDefaultAppClient(appId);
 
