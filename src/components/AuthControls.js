@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import {
-    Stitch,
-    RemoteMongoClient,
     GoogleRedirectCredential
 } from "mongodb-stitch-browser-sdk";
-
-import Settings from './Settings';
-import { timingSafeEqual } from 'crypto';
 
 class AuthControls extends Component {
     constructor(props) {

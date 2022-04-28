@@ -6,10 +6,8 @@ import '../../static/watchgate.scss';
 
 import {
     Stitch,
-    RemoteMongoClient,
-    GoogleRedirectCredential
+    RemoteMongoClient
 } from "mongodb-stitch-browser-sdk";
-import { isNull } from 'util';
 
 
 //TODO: add your MongoDB stitch app id here
@@ -38,7 +36,7 @@ class App extends Component {
             showBalanceTrend = localStorage.getItem("showBalanceTrend") == "false" ? false : true;
             notificationURL = localStorage.getItem("notificationURL");
             safeBalance = parseInt(localStorage.getItem("safeBalance"));
-            if (isNaN(safeBalance) || isNull(safeBalance)) {
+            if (isNaN(safeBalance) || safeBalance == null) {
                 safeBalance = 3000;
             }
         }

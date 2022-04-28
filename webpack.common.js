@@ -27,13 +27,13 @@ module.exports = {
 			test: /\.jsx?$/,
 			exclude: /node_modules\/(?!(mongodb-extjson|bson))/,
 			loader: 'babel-loader',
-			query: {
+			options: {
 				presets: ['@babel/preset-env', '@babel/preset-react'],
 				plugins: ['@babel/plugin-proposal-class-properties']
 			}
 		}, {
 			test: /\.scss$/,
-			loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader?sourceMap']
+			use: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader?sourceMap']
 		}
 		]
 	}

@@ -6,8 +6,7 @@ module.exports = merge(common, {
 	mode: 'development',
 	devtool: 'inline-source-map',
 	devServer: {
-		contentBase: path.resolve(__dirname, 'dist'),
-		publicPath: '/',
+		static: path.resolve(__dirname, 'dist'),
 		port: 9000,
 		historyApiFallback: true
 
