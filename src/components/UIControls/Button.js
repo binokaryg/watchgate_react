@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-var buttonStyle = {
+const buttonStyle = {
   //margin: '10px 10px 10px 0'
 };
 

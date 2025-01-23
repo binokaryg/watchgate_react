@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class TempDisplay extends Component {
     getColorForTemp(temp, minTemp, maxTemp) {
-        var percent = 1 - (temp - minTemp)/(maxTemp - minTemp);
+        const percent = 1 - (temp - minTemp)/(maxTemp - minTemp);
         return this.props.getColor(percent);
     }
 

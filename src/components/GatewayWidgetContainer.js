@@ -19,8 +19,9 @@ class GatewayWidgetContainer extends Component {
 
     render() {
         return (
-            // Render the number widget
+            // Render the gateway widget
             <GatewayWidget
+                pinned={this.props.pinned}
                 heading={this.props.statusinfo._id}
                 colspan={this.props.colspan}
                 rowspan={this.props.rowspan}
@@ -48,6 +49,8 @@ class GatewayWidgetContainer extends Component {
                 settings={this.props.settings}
                 maxBalance={this.props.maxBalance}
                 requestFCM={this.props.requestFCM}
+                togglePin={this.props.togglePin}
+                number={this.props.number}
                 />
         );
     }
@@ -55,6 +58,7 @@ class GatewayWidgetContainer extends Component {
 
 // Enforce the type of props to send to this component
 GatewayWidgetContainer.propTypes = {
+    pinned: PropTypes.bool,
     heading: PropTypes.string,
     colspan: PropTypes.number,
     rowspan: PropTypes.number,
@@ -66,7 +70,9 @@ GatewayWidgetContainer.propTypes = {
     getColorForPercentage: PropTypes.func,
     getColorForDate: PropTypes.func,
     maxBalance: PropTypes.number,
-    requestFCM: PropTypes.func
+    requestFCM: PropTypes.func,
+    togglePin: PropTypes.func,
+    number: PropTypes.string
 }
 
 export default GatewayWidgetContainer;

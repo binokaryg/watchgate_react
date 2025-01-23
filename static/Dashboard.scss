@@ -1,34 +1,41 @@
-.Dashboard {
+.dashboard {
     display: block;
     //min-height: 100vh;
     padding: 0rem 1rem 1rem 1rem;
     -webkit-font-smoothing: antialiased;
 }
 
-.Dashboard > * + * {
+//add a gray border
+.admin {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    transition: all .2s ease-in-out;
+}
+
+.dashboard > * + * {
     margin-top: 1rem;
 }
 
 /* autoprefixer: off */
 @supports(display:grid) {
-    .Dashboard {
+    .dashboard {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         grid-template-rows: auto;
         grid-gap: 1rem;
     }
 
-    .Dashboard > * + * {
+    .dashboard > * + * {
         margin-top: 0;
     }
 }
 
 @media(max-width: 600px) {
-    .Dashboard {
+    .dashboard {
         display: block;
     }
 
-    .Dashboard > * + * {
+    .dashboard > * + * {
         margin-top: 1rem;
     }
 }

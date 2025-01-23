@@ -72,6 +72,7 @@ class GatewayWidget extends Component {
         return (
             <div>
                 <Widget
+                    pinned={this.props.pinned}
                     heading={this.props.heading}
                     colspan={this.props.colspan}
                     rowspan={this.props.rowspan}
@@ -88,6 +89,8 @@ class GatewayWidget extends Component {
                     balanceData={this.props.balanceTrend}
                     smsData={this.props.smsPackTrend}
                     requestFCM={this.props.requestFCM}
+                    togglePin={this.props.togglePin}
+                    number={this.props.number}
                 >
                     {this.showWidget()}
                 </Widget>
@@ -98,6 +101,7 @@ class GatewayWidget extends Component {
 
 // Enforce the type of props to send to this component
 GatewayWidget.propTypes = {
+    pinned: PropTypes.bool,
     heading: PropTypes.string,
     colspan: PropTypes.number,
     rowspan: PropTypes.number,
@@ -124,7 +128,9 @@ GatewayWidget.propTypes = {
     getColorForPercentage: PropTypes.func,
     getColorForDate: PropTypes.func,
     maxBalance: PropTypes.number,
-    requestFCM: PropTypes.func
+    requestFCM: PropTypes.func,
+    togglePin: PropTypes.func,
+    number: PropTypes.string
 }
 
 

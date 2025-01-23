@@ -687,5 +687,20 @@ export default{
 			admin: ["kailali", "sunsari"]
 
 		}
-	]
+	],
+
+	gatewayNumbers: {
+		Rasuwa: "9841000001",
+		Sunsari: "9841000002",
+		Sindhupalchowk: "9841000004",
+		Arghakhachi: "9841000005",
+		Panchthar: "9841000006",
+		Dolpa: "9841000007",
+		Siraha: "9841000008",
+		Parsa: "9841000009",
+		Jhapa: "9841000010",
+		Mahottari: "9841000011",
+		Kailali: "9841000012",
+		Dang: "9841000013"
+	}
 };

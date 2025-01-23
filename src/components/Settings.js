@@ -57,7 +57,8 @@ Settings.propTypes = {
     handleSettingsChange: PropTypes.func,
     handleCheckBoxChange: PropTypes.func,
     handleSafeBalanceChange: PropTypes.func,
-    handleNotificationURLChange: PropTypes.func
+    handleNotificationURLChange: PropTypes.func,
+    handlePinnedGatewaysChange: PropTypes.func
 }
 
 export default Settings;

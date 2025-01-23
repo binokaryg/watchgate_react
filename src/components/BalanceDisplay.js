@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class BalanceDisplay extends Component {
     getColorForBalance(currentBalance, safeBalance){
-        var percent = currentBalance/safeBalance;
+        const percent = currentBalance/safeBalance;
         return this.props.getColor(percent);
         }
 

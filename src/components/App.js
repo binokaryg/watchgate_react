@@ -53,7 +53,7 @@ class App extends Component {
         this.applySettings = this.applySettings.bind(this);
         this.toggleBalanceTrend = this.toggleBalanceTrend.bind(this);
         this.handleSafeBalanceChange = this.handleSafeBalanceChange.bind(this);
-        this.handleNotificationURLChange = this.handleNotificationURLChange.bind(this);
+        this.handleNotificationURLChange = this.handleNotificationURLChange.bind(this);    
     }
 
     togglePopup() {
@@ -93,7 +93,6 @@ class App extends Component {
         localStorage.setItem("notificationURL", url);
         //console.log("notification url set", url);
     }
-
     updateUserName(name) {
         this.setState({ username: name });
     }
