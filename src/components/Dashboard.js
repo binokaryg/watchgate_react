@@ -9,12 +9,12 @@ import sampleData from '../../static/sample_data.js';
 import GatewayWidgetContainer from '../components/GatewayWidgetContainer';
 import TimeAgo from 'react-timeago';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock, faSyringe, faMoneyCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock, faSyringe, faMoneyCheck, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import { Circle } from 'rc-progress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ErrorReload from './ErrorReload';
 
-library.add(faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock, faSyringe, faMoneyCheck);
+library.add(faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchangeAlt, faSync, faBroadcastTower, faEnvelope, faClock, faSyringe, faMoneyCheck, faThumbtack);
 
 class Dashboard extends Component {
 
@@ -125,7 +125,7 @@ class Dashboard extends Component {
             return getMockUser.then(user => {
                 //console.log(`Data: ${JSON.stringify(user)}`);
                 setTimeout(function () {
-                    obj.setState({ instances: user[0].admin });
+                    obj.setState({ instances: user[0].admin, pinnedGateways: user[0].pinned, requestPending: false });
                 }, (3 * 1000)); //add 3 sec delay
             })
 
@@ -142,7 +142,7 @@ class Dashboard extends Component {
             let obj = this;
             return this.client.callFunction("getAdminInstancesForUser").then(docs => {
                 //console.log(`Balance: ${JSON.stringify(docs)}`);
-                obj.setState({ instances: docs, requestPending: false });
+                obj.setState({ instances: docs, pinnedGateways: docs, requestPending: false });
             })
 
                 .catch(ex => {
@@ -233,12 +233,26 @@ class Dashboard extends Component {
             lastUpdate: new Date(),
             mock: false,
             maxBalance: 10000,
-            showReloadPopup: false
+            showReloadPopup: false,
+            pinnedGateways: []
         };
         this.client = props.client;
         this.gateways = props.gateways;
         this.loadUserAdminInstances = this.loadUserAdminInstances.bind(this);
         this.loadGatewayStatus = this.loadGatewayStatus.bind(this);
+        this.togglePin = this.togglePin.bind(this);
+    }
+
+    togglePin(gatewayId) {
+        console.log('Toggling pin for gateway', gatewayId);
+        this.setState(prevState => {
+            const isPinned = prevState.pinnedGateways.includes(gatewayId);
+            return {
+                pinnedGateways: isPinned
+                    ? prevState.pinnedGateways.filter(id => id !== gatewayId)
+                    : [...prevState.pinnedGateways, gatewayId]
+            };
+        });
     }
 
     componentWillMount() {
@@ -302,10 +316,11 @@ class Dashboard extends Component {
                         {this.state.gateways.length == 0
                             ? <div className="list-empty-label">Loading...</div>
                             : this.state.gateways.map(gateway => {
-                                if (this.state.instances.includes(gateway._id.toLowerCase())) {
+                                if (this.state.pinnedGateways.includes(gateway._id.toLowerCase())) {
                                     return (
                                         <GatewayWidgetContainer
                                             key={gateway._id}
+                                            pinned={this.state.pinnedGateways.includes(gateway._id)}
                                             heading={gateway._id}
                                             statusinfo={gateway}
                                             controlinfo={this.state.instances}
@@ -318,6 +333,7 @@ class Dashboard extends Component {
                                             settings={this.props.settings}
                                             maxBalance={this.state.maxBalance}
                                             requestFCM={this.requestFCM}
+                                            togglePin={this.togglePin}
                                         />
                                     );
                                 }
@@ -328,10 +344,11 @@ class Dashboard extends Component {
                     {this.state.gateways.length == 0
                         ? <div className="list-empty-label">Loading...</div>
                         : this.state.gateways.map(gateway => {
-                            if (!this.state.instances.includes(gateway._id.toLowerCase())) {
+                            if (!this.state.pinnedGateways.includes(gateway._id.toLowerCase())) {
                                 return (
                                     <GatewayWidgetContainer
                                         key={gateway._id}
+                                        pinned={false}
                                         heading={gateway._id}
                                         statusinfo={gateway}
                                         controlinfo={this.state.instances}
@@ -344,6 +361,7 @@ class Dashboard extends Component {
                                         settings={this.props.settings}
                                         maxBalance={this.state.maxBalance}
                                         requestFCM={this.requestFCM}
+                                        togglePin={this.togglePin}
                                     />
                                 );
                             }

@@ -38,6 +38,12 @@ class Settings extends Component {
                             maxLength={255}
                             onChange={this.props.handleNotificationURLChange}
                         />
+                        <TextArea
+                            label="Pinned Items"
+                            value={this.props.settings.pinnedGateways}
+                            maxLength={255}
+                            onChange={this.props.handlePinnedGatewaysChange}
+                        />
                         <div className="ok">
                             <Button onClick={this.props.closePopup} label={"OK"}></Button>
                         </div>
@@ -57,7 +63,8 @@ Settings.propTypes = {
     handleSettingsChange: PropTypes.func,
     handleCheckBoxChange: PropTypes.func,
     handleSafeBalanceChange: PropTypes.func,
-    handleNotificationURLChange: PropTypes.func
+    handleNotificationURLChange: PropTypes.func,
+    handlePinnedGatewaysChange: PropTypes.func
 }
 
 export default Settings;

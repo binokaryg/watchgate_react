@@ -96,19 +96,28 @@ class Widget extends Component {
                     <span className='title'>
                         {((typeof this.props.heading) == "string") ? this.props.heading.toUpperCase() : ""}
                     </span>
-                    {this.props.settings.notificationURL && this.canControlInstance() && this.props.settings.notificationURL.length > 5 && this.state.isMouseInside ?
+                    {this.props.settings.notificationURL && this.props.settings.notificationURL.length > 5 && this.state.isMouseInside ?
                         <div className="controls">
+                            <span className="icon" title={this.props.pinned ? "Unpin" : "Pin"}>
+                                <FontAwesomeIcon
+                                    icon="thumbtack"
+                                    onClick={() => this.props.togglePin(this.props.heading)}
+                                    style={{ transform: this.props.pinned ? 'none' : 'rotate(90deg)' }}
+                                />
+                            </span>
                             <span className="icon" title="Check balance">
                                 <FontAwesomeIcon icon="sync" onClick={() => { if (window.confirm(`Are you sure you want to recheck ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'CHECK') } }} />
                             </span>
-                            <span className="icon" title="Subscribe SMS pack">
+                            {/* <span className="icon" title="Subscribe SMS pack">
                                 <FontAwesomeIcon icon="money-check" onClick={() => { if (window.confirm(`Are you sure you want to subscribe SMS packs in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'SUBSCRIBE') } }} />
-                            </span>
-                            <span className="icon" title="Attempt gateway refresh">
-                                <FontAwesomeIcon icon="syringe" onClick={() => { if (window.confirm(`Are you sure you want to restart gateway app in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'RESTART') } }} />
-                            </span>
+                            </span> */}
+                            {this.canControlInstance() ?
+                                <span className="icon" title="Attempt gateway refresh">
+                                    <FontAwesomeIcon icon="syringe" onClick={() => { if (window.confirm(`Are you sure you want to restart gateway app in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'RESTART') } }} />
+                                </span>
+                                : ""}
                         </div>
-                        : <div style={{visibility: "hidden"}}>&nbsp;</div>}
+                        : <div style={{ visibility: "hidden" }}>&nbsp;</div>}
                 </div>
                 <div className="icons">
                     {this.props.data ? <span className="icon dataOn" title="Mobile Data On"><FontAwesomeIcon icon="exchange-alt" /></span> : ""}
@@ -144,12 +153,14 @@ class Widget extends Component {
 // Provide default settings for when they aren't supplied
 Widget.defaultProps = {
     heading: "No Name",
+    pinned: false,
     colspan: 2,
     rowspan: 1
 }
 
 // Enforce the type of props to send to this component
 Widget.propTypes = {
+    pinned: PropTypes.bool,
     heading: PropTypes.string,
     colspan: PropTypes.number,
     rowspan: PropTypes.number,
@@ -162,7 +173,8 @@ Widget.propTypes = {
     getColorForDate: PropTypes.func,
     balanceData: PropTypes.arrayOf(PropTypes.object),
     smsData: PropTypes.arrayOf(PropTypes.object),
-    requestFCM: PropTypes.func
+    requestFCM: PropTypes.func,
+    togglePin: PropTypes.func,
 }
 
 export default Widget;
