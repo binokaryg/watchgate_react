@@ -38,6 +38,21 @@ class Widget extends Component {
         this.setState({ isMouseInside: false });
     }
 
+    handlePhoneNumberClick = (event) => {
+        const element = event.target;
+        const originalText = element.textContent;
+        navigator.clipboard.writeText(originalText).then(() => {
+            element.textContent = "Copied";
+            element.classList.add('copied');
+            setTimeout(() => {
+                element.classList.remove('copied');
+                element.textContent = originalText;
+            }, 1000); // Revert back after 1 second
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+        });
+    };
+    
     // Update the state based on changing props
     componentWillReceiveProps(nextProps) {
         if (this.props.balanceData !== nextProps.balanceData ||
@@ -114,6 +129,11 @@ class Widget extends Component {
                             {this.canControlInstance() ?
                                 <span className="icon" title="Attempt gateway refresh">
                                     <FontAwesomeIcon icon="syringe" onClick={() => { if (window.confirm(`Are you sure you want to restart gateway app in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'RESTART') } }} />
+                                </span>
+                                : ""}
+                            {this.props.number ?
+                                <span className="phoneNumber" title="Click to copy" onClick={() => { this.handlePhoneNumberClick(event) }}>
+                                    {this.props.number}
                                 </span>
                                 : ""}
                         </div>

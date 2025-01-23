@@ -90,6 +90,7 @@ class GatewayWidget extends Component {
                     smsData={this.props.smsPackTrend}
                     requestFCM={this.props.requestFCM}
                     togglePin={this.props.togglePin}
+                    number={this.props.number}
                 >
                     {this.showWidget()}
                 </Widget>
@@ -129,6 +130,7 @@ GatewayWidget.propTypes = {
     maxBalance: PropTypes.number,
     requestFCM: PropTypes.func,
     togglePin: PropTypes.func,
+    number: PropTypes.string
 }
 
 

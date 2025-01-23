@@ -50,6 +50,7 @@ class GatewayWidgetContainer extends Component {
                 maxBalance={this.props.maxBalance}
                 requestFCM={this.props.requestFCM}
                 togglePin={this.props.togglePin}
+                number={this.props.number}
                 />
         );
     }
@@ -71,6 +72,7 @@ GatewayWidgetContainer.propTypes = {
     maxBalance: PropTypes.number,
     requestFCM: PropTypes.func,
     togglePin: PropTypes.func,
+    number: PropTypes.string
 }
 
 export default GatewayWidgetContainer;

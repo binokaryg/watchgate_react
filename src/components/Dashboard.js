@@ -125,7 +125,7 @@ class Dashboard extends Component {
             return getMockUser.then(user => {
                 //console.log(`Data: ${JSON.stringify(user)}`);
                 setTimeout(function () {
-                    obj.setState({ instances: user[0].admin, pinnedGateways: user[0].pinned, requestPending: false });
+                    obj.setState({ instances: user[0].admin, pinnedGateways: user[0].admin, requestPending: false });
                 }, (3 * 1000)); //add 3 sec delay
             })
 
@@ -147,6 +147,62 @@ class Dashboard extends Component {
 
                 .catch(ex => {
                     console.error("Error while loading user instances: " + ex.message);
+                    this.showErrorPopup();
+                });
+        }
+    }
+
+    //Call MongoDB function "listGateways"
+    //It returns in this format:
+    // {
+    //     "gateway1": "+9779812345678",
+    //     "gateway2": "+9779812345679",
+    //     ..
+    // }
+    loadGatewayNumbers() {
+        this.setState({ loading: true });
+        if (this.state.mock) {
+            const resultJSON = sampleData.gatewayNumbers;
+            /* ES5 */
+            var successful = true; // Math.random() > 0.5 ? true : false;
+            // Promise
+            var getMockData = new Promise(
+                function (resolve, reject) {
+                    if (successful) {
+                        var result = resultJSON;
+                        resolve(result); // fulfilled
+                    } else {
+                        var reason = new Error('not happy');
+                        reject(reason); // reject
+                    }
+                }
+            );
+
+            let obj = this;
+            return getMockData.then(docs => {
+                //console.log(`Data: ${JSON.stringify(docs)}`);
+                setTimeout(function () {
+                    obj.setState({ gatewayNumbers: docs, requestPending: false });
+                }, (3 * 1000)); //add 3 sec delay
+            })
+
+                .catch(ex => {
+                    console.error("Error while loading status: " + ex.message);
+                    this.showErrorPopup();
+                });
+        }
+
+        else {
+            if (!this.client.auth.isLoggedIn) {
+                return this.loadGatewayUnavailableStatus();
+            }
+            let obj = this;
+            return this.client.callFunction("listGateways").then(docs => {
+                obj.setState({ gatewayNumbers: docs, requestPending: false });
+            })
+
+                .catch(ex => {
+                    console.error("Error while loading status: " + ex.message);
                     this.showErrorPopup();
                 });
         }
@@ -231,20 +287,23 @@ class Dashboard extends Component {
             instances: [],
             loading: false,
             lastUpdate: new Date(),
-            mock: false,
+            mock: true,
             maxBalance: 10000,
             showReloadPopup: false,
-            pinnedGateways: []
+            pinnedGateways: [],
+            gatewayNumbers: null
         };
         this.client = props.client;
         this.gateways = props.gateways;
+        this.gatewayNumbers = props.gatewayNumbers;
         this.loadUserAdminInstances = this.loadUserAdminInstances.bind(this);
         this.loadGatewayStatus = this.loadGatewayStatus.bind(this);
+        this.loadGatewayNumbers = this.loadGatewayNumbers.bind(this);
         this.togglePin = this.togglePin.bind(this);
     }
 
     togglePin(gatewayId) {
-        console.log('Toggling pin for gateway', gatewayId);
+        //console.log('Toggling pin for gateway', gatewayId);
         this.setState(prevState => {
             const isPinned = prevState.pinnedGateways.includes(gatewayId);
             return {
@@ -262,6 +321,7 @@ class Dashboard extends Component {
     componentDidMount() {
         //console.log(sampleData.oldData);
         this.loadUserAdminInstances();
+        this.loadGatewayNumbers();
 
         this.loadGatewayStatus().then(_ => {
             // Re-fetch every 10 minutes
@@ -316,6 +376,7 @@ class Dashboard extends Component {
                         {this.state.gateways.length == 0
                             ? <div className="list-empty-label">Loading...</div>
                             : this.state.gateways.map(gateway => {
+                                const gatewayNumber = this.state.gatewayNumbers ? this.state.gatewayNumbers[gateway._id] : null;
                                 if (this.state.pinnedGateways.includes(gateway._id.toLowerCase())) {
                                     return (
                                         <GatewayWidgetContainer
@@ -334,6 +395,7 @@ class Dashboard extends Component {
                                             maxBalance={this.state.maxBalance}
                                             requestFCM={this.requestFCM}
                                             togglePin={this.togglePin}
+                                            number={gatewayNumber}
                                         />
                                     );
                                 }
@@ -344,6 +406,7 @@ class Dashboard extends Component {
                     {this.state.gateways.length == 0
                         ? <div className="list-empty-label">Loading...</div>
                         : this.state.gateways.map(gateway => {
+                            const gatewayNumber = this.state.gatewayNumbers ? this.state.gatewayNumbers[gateway._id] : null;
                             if (!this.state.pinnedGateways.includes(gateway._id.toLowerCase())) {
                                 return (
                                     <GatewayWidgetContainer
@@ -362,6 +425,7 @@ class Dashboard extends Component {
                                         maxBalance={this.state.maxBalance}
                                         requestFCM={this.requestFCM}
                                         togglePin={this.togglePin}
+                                        number={gatewayNumber}
                                     />
                                 );
                             }
