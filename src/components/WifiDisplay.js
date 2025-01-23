@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class WifiDisplay extends Component {
 
     getColorForWifi(signal, fullSignal) {
-        var percent = signal / fullSignal;
+        const percent = signal / fullSignal;
         return this.props.getColor(percent);
     }
 

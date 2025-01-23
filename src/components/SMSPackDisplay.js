@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class SMSPackDisplay extends Component {
 
     getColorForSMSPack(smsRemaining, safeValue) {
-        var percent = smsRemaining / safeValue;
+        const percent = smsRemaining / safeValue;
         return this.props.getColor(percent);
     }
 

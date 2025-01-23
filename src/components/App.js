@@ -31,12 +31,10 @@ class App extends Component {
         super(props);
         let showBalanceTrend = true;
         let safeBalance = 3000;
-        let notificationURL = 'ask me later';
-        let pinnedGateways = '';
+        let notificationURL = '';
         try {
             showBalanceTrend = localStorage.getItem("showBalanceTrend") == "false" ? false : true;
             notificationURL = localStorage.getItem("notificationURL");
-            pinnedGateways = localStorage.getItem("pinnedGateways");
             safeBalance = parseInt(localStorage.getItem("safeBalance"));
             if (isNaN(safeBalance) || safeBalance == null) {
                 safeBalance = 3000;
@@ -46,7 +44,7 @@ class App extends Component {
             console.log(`Could not get from local storage: ${exc}`);
         }
         this.state = {
-            settings: { showBalanceTrend, safeBalance, notificationURL, pinnedGateways },
+            settings: { showBalanceTrend, safeBalance, notificationURL },
             showPopup: false,
             username: 'Unregistered user'
         };
@@ -55,8 +53,7 @@ class App extends Component {
         this.applySettings = this.applySettings.bind(this);
         this.toggleBalanceTrend = this.toggleBalanceTrend.bind(this);
         this.handleSafeBalanceChange = this.handleSafeBalanceChange.bind(this);
-        this.handleNotificationURLChange = this.handleNotificationURLChange.bind(this);
-        this.handlePinnedGatewaysChange = this.handlePinnedGatewaysChange.bind(this);        
+        this.handleNotificationURLChange = this.handleNotificationURLChange.bind(this);    
     }
 
     togglePopup() {
@@ -96,15 +93,6 @@ class App extends Component {
         localStorage.setItem("notificationURL", url);
         //console.log("notification url set", url);
     }
-
-    handlePinnedGatewaysChange(gateways) {
-        let settings = Object.assign({}, this.state.settings);
-        settings.pinnedGateways = gateways.join(",");
-        this.setState({ settings });
-        localStorage.setItem("pinnedGateways", gateways.join(","));
-        //console.log("pinned gateways set", gateways);
-    }
-
     updateUserName(name) {
         this.setState({ username: name });
     }
@@ -128,7 +116,6 @@ class App extends Component {
                             handleCheckBoxChange={this.handleCheckBoxChange}
                             handleSafeBalanceChange={this.handleSafeBalanceChange}
                             handleNotificationURLChange={this.handleNotificationURLChange}
-                            handlePinnedGatewaysChange={this.handlePinnedGatewaysChange}
                         />
                         : null
                     }

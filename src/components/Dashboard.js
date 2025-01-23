@@ -44,16 +44,16 @@ class Dashboard extends Component {
     }
 
     getPercentageForElapsedTime(refTime, max) {
-        var now = this.state.curTime;
-        var diff = now - refTime.getTime();
-        var res = 100 * diff / max;
+        const now = this.state.curTime;
+        const diff = now - refTime.getTime();
+        const res = 100 * diff / max;
         return res;
     }
 
     getColorForDate(date, maxInterval) {
-        var now = new Date();
-        var diff = now - date;
-        var percent = 1 - (diff / maxInterval);
+        const now = new Date();
+        const diff = now - date;
+        const percent = 1 - (diff / maxInterval);
         return getColorForPercent(percent);
     }
 
@@ -76,7 +76,7 @@ class Dashboard extends Component {
     }
 
     traverse(object, func, key, offset) {
-        for (var i in object) {
+        for (let i in object) {
             func.apply(this, [object, i, key, offset]);
             if (object[i] !== null && typeof (object[i]) == "object") {
                 //going one step down in the object tree!!
@@ -87,8 +87,8 @@ class Dashboard extends Component {
 
     resetDate(object, key, keyToChange, refDate) {
         if (key === keyToChange) {
-            var hrs = object[key];
-            var date = new Date(refDate - hrs * 60 * 60 * 1000);
+            const hrs = object[key];
+            const date = new Date(refDate - hrs * 60 * 60 * 1000);
             object[key] = date;
             //console.log(key, keyToChange, refDate, hrs, date);
         }
@@ -107,15 +107,15 @@ class Dashboard extends Component {
         if (this.state.mock) {
             const userJSON = sampleData.userData;
             /* ES5 */
-            var successful = true; // Math.random() > 0.5 ? true : false;
+            const successful = true; // Math.random() > 0.5 ? true : false;
             // Promise
-            var getMockUser = new Promise(
+            const getMockUser = new Promise(
                 function (resolve, reject) {
                     if (successful) {
-                        var result = userJSON;
+                        const result = userJSON;
                         resolve(result); // fulfilled
                     } else {
-                        var reason = new Error('not happy');
+                        const reason = new Error('not happy');
                         reject(reason); // reject
                     }
                 }
@@ -125,7 +125,7 @@ class Dashboard extends Component {
             return getMockUser.then(user => {
                 //console.log(`Data: ${JSON.stringify(user)}`);
                 setTimeout(function () {
-                    obj.setState({ instances: user[0].admin, pinnedGateways: user[0].admin, requestPending: false });
+                    obj.setState({ adminGateways: user[0].admin, requestPending: false });
                 }, (3 * 1000)); //add 3 sec delay
             })
 
@@ -142,7 +142,8 @@ class Dashboard extends Component {
             let obj = this;
             return this.client.callFunction("getAdminInstancesForUser").then(docs => {
                 //console.log(`Balance: ${JSON.stringify(docs)}`);
-                obj.setState({ instances: docs, pinnedGateways: docs, requestPending: false });
+                const pinnedGateways = JSON.parse(localStorage.getItem('pinnedGateways')) || [];
+                obj.setState({ adminGateways: docs, pinnedGateways: pinnedGateways.concat(docs), requestPending: false });
             })
 
                 .catch(ex => {
@@ -164,15 +165,15 @@ class Dashboard extends Component {
         if (this.state.mock) {
             const resultJSON = sampleData.gatewayNumbers;
             /* ES5 */
-            var successful = true; // Math.random() > 0.5 ? true : false;
+            const successful = true; // Math.random() > 0.5 ? true : false;
             // Promise
-            var getMockData = new Promise(
+            const getMockData = new Promise(
                 function (resolve, reject) {
                     if (successful) {
-                        var result = resultJSON;
+                        const result = resultJSON;
                         resolve(result); // fulfilled
                     } else {
-                        var reason = new Error('not happy');
+                        const reason = new Error('not happy');
                         reject(reason); // reject
                     }
                 }
@@ -215,15 +216,15 @@ class Dashboard extends Component {
             const resultJSON = sampleData.recentData;
             this.setDate(resultJSON, new Date());
             /* ES5 */
-            var successful = true; // Math.random() > 0.5 ? true : false;
+            const successful = true; // Math.random() > 0.5 ? true : false;
             // Promise
-            var getMockData = new Promise(
+            const getMockData = new Promise(
                 function (resolve, reject) {
                     if (successful) {
-                        var result = resultJSON;
+                        const result = resultJSON;
                         resolve(result); // fulfilled
                     } else {
-                        var reason = new Error('not happy');
+                        const reason = new Error('not happy');
                         reject(reason); // reject
                     }
                 }
@@ -267,7 +268,7 @@ class Dashboard extends Component {
 
     loadGatewayUnavailableStatus() {
         // Promise
-        var getMessage = new Promise(
+        const getMessage = new Promise(
             function (resolve, reject) {
                 resolve("Unauthorized"); // fulfilled
             }
@@ -284,10 +285,10 @@ class Dashboard extends Component {
 
         this.state = {
             gateways: [],
-            instances: [],
+            adminGateways: [],
             loading: false,
             lastUpdate: new Date(),
-            mock: true,
+            mock: false,
             maxBalance: 10000,
             showReloadPopup: false,
             pinnedGateways: [],
@@ -303,13 +304,17 @@ class Dashboard extends Component {
     }
 
     togglePin(gatewayId) {
-        //console.log('Toggling pin for gateway', gatewayId);
         this.setState(prevState => {
-            const isPinned = prevState.pinnedGateways.includes(gatewayId);
+            const isPinned = prevState.pinnedGateways.includes(gatewayId.toLowerCase());
+            const newPinnedGateways = isPinned
+                ? prevState.pinnedGateways.filter(id => id !== gatewayId.toLowerCase()).map(id => id.toLowerCase())
+                : [...prevState.pinnedGateways, gatewayId];
+
+            // Save to local storage
+            localStorage.setItem('pinnedGateways', JSON.stringify(newPinnedGateways));
+
             return {
-                pinnedGateways: isPinned
-                    ? prevState.pinnedGateways.filter(id => id !== gatewayId)
-                    : [...prevState.pinnedGateways, gatewayId]
+                pinnedGateways: newPinnedGateways
             };
         });
     }
@@ -319,7 +324,10 @@ class Dashboard extends Component {
     }
 
     componentDidMount() {
-        //console.log(sampleData.oldData);
+        //console.log(sampleData.oldData);// Load pinned gateways from local storage
+        const pinnedGateways = JSON.parse(localStorage.getItem('pinnedGateways')) || [];
+        this.setState({ pinnedGateways });
+
         this.loadUserAdminInstances();
         this.loadGatewayNumbers();
 
@@ -371,20 +379,21 @@ class Dashboard extends Component {
                         </div>
                     </div>
                 </div>
-                {this.state.instances.length > 0 ?
-                    <div className="Dashboard" style={{ borderBottom: "1px solid #ccc" }}>
+                {this.state.adminGateways.length > 0 ?
+                    <div className="dashboard admin" style={{ borderBottom: "1px solid #ccc" }}>
                         {this.state.gateways.length == 0
                             ? <div className="list-empty-label">Loading...</div>
                             : this.state.gateways.map(gateway => {
-                                const gatewayNumber = this.state.gatewayNumbers ? this.state.gatewayNumbers[gateway._id] : null;
-                                if (this.state.pinnedGateways.includes(gateway._id.toLowerCase())) {
+                                const gatewayId = gateway._id.toLowerCase();
+                                const gatewayNumber = this.state.gatewayNumbers ? stripCountryCode(this.state.gatewayNumbers[gatewayId]) : null;
+                                if (this.state.pinnedGateways.includes(gateway._id.toLowerCase()) || this.state.adminGateways.includes(gateway._id.toLowerCase())) {
                                     return (
                                         <GatewayWidgetContainer
                                             key={gateway._id}
                                             pinned={this.state.pinnedGateways.includes(gateway._id)}
                                             heading={gateway._id}
                                             statusinfo={gateway}
-                                            controlinfo={this.state.instances}
+                                            controlinfo={this.state.adminGateways}
                                             loading={this.state.loading}
                                             colspan={1}
                                             onChange={() => this.loadGatewayStatus()}
@@ -401,20 +410,21 @@ class Dashboard extends Component {
                                 }
                             })}
                     </div> : null}
-                {this.state.instances.length > 0 ? <br /> : null}
-                <div className="Dashboard">
+                {this.state.adminGateways.length > 0 ? <br /> : null}
+                <div className="dashboard">
                     {this.state.gateways.length == 0
                         ? <div className="list-empty-label">Loading...</div>
                         : this.state.gateways.map(gateway => {
-                            const gatewayNumber = this.state.gatewayNumbers ? this.state.gatewayNumbers[gateway._id] : null;
-                            if (!this.state.pinnedGateways.includes(gateway._id.toLowerCase())) {
+                            const gatewayId = gateway._id.toLowerCase();
+                            const gatewayNumber = this.state.gatewayNumbers ? this.state.gatewayNumbers[gatewayId] : null;
+                            if (!this.state.pinnedGateways.includes(gateway._id.toLowerCase()) && !this.state.adminGateways.includes(gateway._id.toLowerCase())) {
                                 return (
                                     <GatewayWidgetContainer
                                         key={gateway._id}
                                         pinned={false}
                                         heading={gateway._id}
                                         statusinfo={gateway}
-                                        controlinfo={this.state.instances}
+                                        controlinfo={this.state.adminGateways}
                                         loading={this.state.loading}
                                         colspan={1}
                                         onChange={() => this.loadGatewayStatus()}
@@ -438,31 +448,30 @@ class Dashboard extends Component {
 
 }
 
-var getColorForPercent = function (pct) {
-    {
-        for (var i = 1; i < percentColors.length - 1; i++) {
-            if (pct < percentColors[i].pct) {
-                break;
-            }
+const getColorForPercent = function (pct) {
+    for (let i = 1; i < percentColors.length - 1; i++) {
+        if (pct < percentColors[i].pct) {
+            const lower = percentColors[i - 1];
+            const upper = percentColors[i];
+            const range = upper.pct - lower.pct;
+            const rangePct = (pct - lower.pct) / range;
+            const pctLower = 1 - rangePct;
+            const pctUpper = rangePct;
+            const color = {
+                r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+                g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+                b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+            };
+            return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
         }
-        var lower = percentColors[i - 1];
-        var upper = percentColors[i];
-        var range = upper.pct - lower.pct;
-        var rangePct = (pct - lower.pct) / range;
-        var pctLower = 1 - rangePct;
-        var pctUpper = rangePct;
-        var color = {
-            r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
-            g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
-            b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
-        };
-        return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
-        // or output as hex if preferred
     }
+    // Default to the last color if pct is not less than any percentColors.pct
+    const lastColor = percentColors[percentColors.length - 1].color;
+    return 'rgb(' + [lastColor.r, lastColor.g, lastColor.b].join(',') + ')';
 }
 
-var getMaxBalanceFromData = function (data) {
-    var max = 0;
+const getMaxBalanceFromData = function (data) {
+    let max = 0;
     //console.log("data", data);
     data.forEach(function (gateway) {
         //console.log("gateway", gateway);
@@ -481,10 +490,20 @@ var getMaxBalanceFromData = function (data) {
     return Math.min(max, 5000);
 }
 
-var percentColors = [
+const percentColors = [
     { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0x00 } },
     { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0x00 } },
     { pct: 1.0, color: { r: 0x00, g: 0xff, b: 0x00 } }];
 
-var updateDurationSec = 600;
+const stripCountryCode = function (number) {
+    if (number) {
+        if (number.startsWith('+977')) {
+            return number.substring(4);
+        }
+        return number;
+    }
+    return number;
+}
+
+const updateDurationSec = 600;
 export default Dashboard;

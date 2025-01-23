@@ -42,7 +42,7 @@ class Widget extends Component {
         const element = event.target;
         const originalText = element.textContent;
         navigator.clipboard.writeText(originalText).then(() => {
-            element.textContent = "Copied";
+            element.textContent = "copied";
             element.classList.add('copied');
             setTimeout(() => {
                 element.classList.remove('copied');
@@ -52,7 +52,7 @@ class Widget extends Component {
             console.error('Failed to copy text: ', err);
         });
     };
-    
+
     // Update the state based on changing props
     componentWillReceiveProps(nextProps) {
         if (this.props.balanceData !== nextProps.balanceData ||
@@ -111,31 +111,32 @@ class Widget extends Component {
                     <span className='title'>
                         {((typeof this.props.heading) == "string") ? this.props.heading.toUpperCase() : ""}
                     </span>
-                    {this.props.settings.notificationURL && this.props.settings.notificationURL.length > 5 && this.state.isMouseInside ?
+                    {this.state.isMouseInside ?
                         <div className="controls">
-                            <span className="icon" title={this.props.pinned ? "Unpin" : "Pin"}>
-                                <FontAwesomeIcon
-                                    icon="thumbtack"
-                                    onClick={() => this.props.togglePin(this.props.heading)}
-                                    style={{ transform: this.props.pinned ? 'none' : 'rotate(90deg)' }}
-                                />
-                            </span>
-                            <span className="icon" title="Check balance">
-                                <FontAwesomeIcon icon="sync" onClick={() => { if (window.confirm(`Are you sure you want to recheck ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'CHECK') } }} />
-                            </span>
-                            {/* <span className="icon" title="Subscribe SMS pack">
-                                <FontAwesomeIcon icon="money-check" onClick={() => { if (window.confirm(`Are you sure you want to subscribe SMS packs in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'SUBSCRIBE') } }} />
-                            </span> */}
                             {this.canControlInstance() ?
+                                <span title="Admin">
+                                    <FontAwesomeIcon icon="thumbtack" />
+                                </span>
+                                :
+                                <span className="icon" title={this.props.pinned ? "Unpin" : "Pin"} onClick={() => this.props.togglePin(this.props.heading)} style={{ transform: this.props.pinned ? 'none' : 'rotate(90deg)' }}>
+                                    <FontAwesomeIcon icon="thumbtack" />
+                                </span>
+                            }
+                            {this.props.settings.notificationURL && this.props.settings.notificationURL.length > 5 ?
+                                <span className="icon" title="Check balance">
+                                    <FontAwesomeIcon icon="sync" onClick={() => { if (window.confirm(`Are you sure you want to recheck ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'CHECK') } }} />
+                                </span>
+                                : null}
+                            {this.props.settings.notificationURL && this.props.settings.notificationURL.length > 5 && this.canControlInstance() ?
                                 <span className="icon" title="Attempt gateway refresh">
                                     <FontAwesomeIcon icon="syringe" onClick={() => { if (window.confirm(`Are you sure you want to restart gateway app in ${this.props.heading}?`)) { this.props.requestFCM(this.props.heading, 'RESTART') } }} />
                                 </span>
-                                : ""}
+                                : null}
                             {this.props.number ?
-                                <span className="phoneNumber" title="Click to copy" onClick={() => { this.handlePhoneNumberClick(event) }}>
+                                <span className="phoneNumber" title="Click to copy" onClick={(event) => { this.handlePhoneNumberClick(event) }}>
                                     {this.props.number}
                                 </span>
-                                : ""}
+                                : null}
                         </div>
                         : <div style={{ visibility: "hidden" }}>&nbsp;</div>}
                 </div>

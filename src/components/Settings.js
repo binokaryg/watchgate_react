@@ -38,12 +38,6 @@ class Settings extends Component {
                             maxLength={255}
                             onChange={this.props.handleNotificationURLChange}
                         />
-                        <TextArea
-                            label="Pinned Items"
-                            value={this.props.settings.pinnedGateways}
-                            maxLength={255}
-                            onChange={this.props.handlePinnedGatewaysChange}
-                        />
                         <div className="ok">
                             <Button onClick={this.props.closePopup} label={"OK"}></Button>
                         </div>

@@ -121,12 +121,12 @@
 
 .Widget .phoneNumber {
     margin: 10px;
-    size: 0.8em;
-    cursor: grab; // Change cursor
-    transition: color 0.5s ease, opacity 0.5s ease;
+    cursor: copy; // Change cursor
+    transition: color 0.5s ease, opacity 0.5s ease, font-size 0.5s ease;
 
     &:hover {
         color: #1e90ff; // DodgerBlue
+        font-size: 1.2em;
     }
 
     &.copied {

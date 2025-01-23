@@ -10,7 +10,7 @@ class InnerGraph extends Component {
     getColorForBalanceTrend(getColor, balanceTrend, safeBalance) {
         let colorArray = [];
         balanceTrend.forEach(function (balanceInfo) {
-            var percent = balanceInfo.y / safeBalance;
+            const percent = balanceInfo.y / safeBalance;
             colorArray.push(getColor(percent));
         });
         return colorArray;
@@ -156,9 +156,9 @@ class InnerGraph extends Component {
         let chartOptions = this.state.chartOptions;
 
         //Create a dataset object that Chart.js can understand
-        var balanceTrend = cloneDeep(props.balanceData);
-        var smsTrend = cloneDeep(props.smsData);
-        var maxBalance = props.maxBalance;
+        let balanceTrend = cloneDeep(props.balanceData);
+        const smsTrend = cloneDeep(props.smsData);
+        const maxBalance = props.maxBalance;
 
         if (balanceTrend) {
 

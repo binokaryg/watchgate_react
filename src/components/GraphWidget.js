@@ -65,7 +65,7 @@ class GraphWidget extends Component {
 
         //Create a dataset object that Chart.js to understand
         props.data.forEach(function (data) {
-            var balanceTrend = data.balanceTrend.slice();
+            let  balanceTrend = data.balanceTrend.slice();
             balanceTrend.forEach(function (balanceInfo) {
                 balanceInfo.x = new Date(balanceInfo.date);
                 balanceInfo.y = balanceInfo.bal;

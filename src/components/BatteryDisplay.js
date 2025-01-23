@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class BatteryDisplay extends Component {
     getColorForBattery(battery) {
-        var percent = battery/100;
+        const percent = battery/100;
         return this.props.getColor(percent);
     }
     render() {
