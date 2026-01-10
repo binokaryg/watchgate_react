@@ -122,12 +122,12 @@ class InnerGraph extends Component {
 
 
     // Update the state based on changing props
-    componentWillReceiveProps(nextProps) {
-        if (this.props.balanceData !== nextProps.balanceData ||
-            this.props.smsData !== nextProps.smsData ||
-            this.props.settings.safeBalance != nextProps.settings.safeBalance) {
+    componentDidUpdate(prevProps) {
+        if (this.props.balanceData !== prevProps.balanceData ||
+            this.props.smsData !== prevProps.smsData ||
+            this.props.settings.safeBalance != prevProps.settings.safeBalance) {
             //Only update if the data has actually changed
-            this.generateDatasets(nextProps);
+            this.generateDatasets(this.props);
         }
     }
 

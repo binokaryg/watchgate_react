@@ -36,7 +36,20 @@ module.exports = {
 			}
 		}, {
 			test: /\.scss$/,
-			use: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader?sourceMap']
+			use: [
+				'style-loader',
+				'css-loader',
+				'resolve-url-loader',
+				{
+					loader: 'sass-loader',
+					options: {
+						sourceMap: true,
+						sassOptions: {
+							quietDeps: true
+						}
+					}
+				}
+			]
 		}
 		]
 	}

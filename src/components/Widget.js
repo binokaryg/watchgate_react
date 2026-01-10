@@ -54,12 +54,12 @@ class Widget extends Component {
     };
 
     // Update the state based on changing props
-    componentWillReceiveProps(nextProps) {
-        if (this.props.balanceData !== nextProps.balanceData ||
-            this.props.smsData !== nextProps.smsData) {
+    componentDidUpdate(prevProps) {
+        if (this.props.balanceData !== prevProps.balanceData ||
+            this.props.smsData !== prevProps.smsData) {
             //Only update if the data has actually changed
-            let lastSMSActivity = this.lastSMSPackActivity(nextProps);
-            let lastBalanceActivity = this.lastBalanceActivity(nextProps);
+            let lastSMSActivity = this.lastSMSPackActivity(this.props);
+            let lastBalanceActivity = this.lastBalanceActivity(this.props);
             this.setState({
                 lastSMSActivity,
                 lastBalanceActivity

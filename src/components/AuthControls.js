@@ -18,17 +18,23 @@ class AuthControls extends Component {
         script.async = true;
         script.defer = true;
         script.onload = () => {
-            if (window.google && this.googleClientId) {
-                window.google.accounts.id.initialize({
-                    client_id: this.googleClientId,
-                    callback: this.handleCredentialResponse
-                });
-                // Render the button
-                window.google.accounts.id.renderButton(
-                    document.getElementById('google-signin-button'),
-                    { theme: 'outline', size: 'large' }
-                );
-            }
+            // Use setTimeout to ensure React has rendered the component
+            setTimeout(() => {
+                if (window.google && this.googleClientId) {
+                    window.google.accounts.id.initialize({
+                        client_id: this.googleClientId,
+                        callback: this.handleCredentialResponse
+                    });
+                    // Render the button - wait for DOM element to be ready
+                    const buttonElement = document.getElementById('google-signin-button');
+                    if (buttonElement) {
+                        window.google.accounts.id.renderButton(
+                            buttonElement,
+                            { theme: 'outline', size: 'large' }
+                        );
+                    }
+                }
+            }, 100);
         };
         document.head.appendChild(script);
 

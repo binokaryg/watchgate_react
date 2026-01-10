@@ -9,11 +9,17 @@ import TimeAgo from 'react-timeago'
 
 class DateDisplay extends Component {
     render() {
+        // Validate that date is a valid Date object
+        const isValidDate = this.props.date instanceof Date && !isNaN(this.props.date.getTime());
+        
+        if (!isValidDate) {
+            return <div className="DateDisplay"></div>;
+        }
+        
         return (
-            <div className="DateDisplay" title={this.props.dateFor + ' info last updated on ' + new Date(this.props.date).toString()}>
-                <TimeAgo className="date" date={this.props.date} style={{ color: this.props.getColorForDate(this.props.date, 8 * 60 * 60 * 1000) }} title={this.props.dateFor + ' info last updated on ' + new Date(this.props.date).toString()} />
+            <div className="DateDisplay" title={this.props.dateFor + ' info last updated on ' + this.props.date.toString()}>
+                <TimeAgo className="date" date={this.props.date} style={{ color: this.props.getColorForDate(this.props.date, 8 * 60 * 60 * 1000) }} title={this.props.dateFor + ' info last updated on ' + this.props.date.toString()} />
             </div>
-
         );
     }
 }

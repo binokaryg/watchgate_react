@@ -160,13 +160,13 @@ input[type='checkbox']:checked {
   cursor:pointer;
 	display: inline-flex;
 	align-items:center;
-	&-text{
-		padding-left:10px;
-	}
   margin-right:20px;
 	padding:10px;
 	border: 1px solid #ccc;
 	border-radius:5px;
+	&-text{
+		padding-left:10px;
+	}
 }
 
 .facebook-signin-logo{
