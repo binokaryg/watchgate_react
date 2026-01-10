@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:9000",
+      "webRoot": "${workspaceFolder}/src",
+      "userDataDir": "${env:USERPROFILE}\\AppData\\Local\\Google\\Chrome\\User Data",
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
+      },
+      "preLaunchTask": "npm: start"
+    },
+    {
+      "name": "Chrome (Attach)",
+      "type": "chrome",
+      "request": "attach",
+      "port": 9222,
+      "pathMapping": {
+        "/": "${workspaceFolder}/",
+        "/src": "${workspaceFolder}/src"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug App",
+      "configurations": ["Chrome"]
+    }
+  ]
+}
