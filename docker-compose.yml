@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 
 services:
   watchgate:
@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        #replace your-app-id below with the actual ID
-        - WATCHGATE_APP_ID=your-app-id
+        API_URL: ${API_URL}
+        API_KEY: ${API_KEY}
     ports:
-      - 80:80
+      - 3000:80

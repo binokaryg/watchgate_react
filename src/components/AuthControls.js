@@ -1,111 +1,136 @@
 import React, { Component } from 'react';
-import {
-    GoogleRedirectCredential
-} from "mongodb-stitch-browser-sdk";
 
 class AuthControls extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            userData: null
+            userData: null,
+            loggingIn: false,
+            error: null
         };
-        this.client = props.client;
+        this.googleClientId = process.env.GOOGLE_CLIENT_ID;
     }
 
     componentDidMount() {
-        if (this.client.auth.currentUser) {
-            let currentUserData = this.client.auth.currentUser.profile.data;
-            //console.log("user", userData);
-            this.setState({ userData: currentUserData});
-            this.props.updateUserName(currentUserData.name);
+        // Load Google Sign-In library
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            if (window.google && this.googleClientId) {
+                window.google.accounts.id.initialize({
+                    client_id: this.googleClientId,
+                    callback: this.handleCredentialResponse
+                });
+                // Render the button
+                window.google.accounts.id.renderButton(
+                    document.getElementById('google-signin-button'),
+                    { theme: 'outline', size: 'large' }
+                );
+            }
+        };
+        document.head.appendChild(script);
+
+        // Check if user is already logged in (from localStorage)
+        const storedEmail = localStorage.getItem('userEmail');
+        const storedName = localStorage.getItem('userName');
+        const authToken = localStorage.getItem('authToken');
+
+        if (authToken && storedEmail && storedName) {
+            this.setState({
+                userData: { name: storedName, email: storedEmail }
+            });
+            this.props.updateUserName(storedName);
+            this.props.updateUserEmail(storedEmail);
+            this.props.setIsLoggedIn(true);
         }
     }
 
-    render() {
-        let authed = this.client.auth.isLoggedIn;
-
-        if (this.client.auth.hasRedirectResult()) {
-            this.client.auth.handleRedirectResult()
-                .then(user => {
-                    this.setState({ userData: user.profile.data })
-                    console.log("Welcome: " + user.profile.data);
-                    /* //Disabled to allow other users
-                    if (user.profile.data.email.indexOf("@medicmobile.org") < 0) {
-                        alert("Please sign in using Medic Mobile account.");
-                        authed = false;
-                        logout();
-                    }
-                    */
+    handleCredentialResponse = async (response) => {
+        const { credential } = response;
+        
+        this.setState({ loggingIn: true, error: null });
+        try {
+            // Send the ID token to your backend
+            const backendResponse = await fetch(`${this.props.apiUrl}/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.props.apiKey}`
+                },
+                body: JSON.stringify({
+                    id_token: credential
                 })
-                .catch(function (err) {
-                    console.log(err);
-                    if (err.name === "StitchRedirectError" && err.message.indexOf("email domain not allowed")) {
-                        alert("Could not log in. Please make sure you are using a valid account.");
-                        logout();
-                    }
-                });
+            });
 
+            if (!backendResponse.ok) {
+                throw new Error(`Authentication failed: ${backendResponse.status}`);
+            }
+
+            const data = await backendResponse.json();
+            
+            // Store auth token and user info
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('userEmail', data.email);
+            localStorage.setItem('userName', data.name);
+
+            // Update parent component with user info
+            this.setState({
+                userData: { name: data.name, email: data.email },
+                loggingIn: false
+            });
+            this.props.updateUserName(data.name);
+            this.props.updateUserEmail(data.email);
+            this.props.setIsLoggedIn(true);
+
+        } catch (err) {
+            console.error('Login error:', err);
+            this.setState({ error: err.message, loggingIn: false });
         }
-        let logout = () => this.client.auth.logout().then(() => location.reload());
+    };
+
+    handleLogout = () => {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userName');
+        this.setState({ userData: null });
+        this.props.setIsLoggedIn(false);
+        location.reload();
+    };
+
+    render() {
+        const { userData, loggingIn, error } = this.state;
+        const isLoggedIn = !!userData;
+
         return (
             <div>
-                {authed
+                {isLoggedIn
                     ? <div>
                         <div className="login-header">
                             <span className="login-text">
                                 <span className="username">
-                                    {this.state.userData && this.state.userData.name ? this.state.userData.name : "?"}
+                                    {userData && userData.name ? userData.name : "?"}
                                 </span>
                             </span>
                             <div>
-                                <a className="logout" href="#" onClick={() => logout()}>
+                                <a className="logout" href="#" onClick={(e) => { e.preventDefault(); this.handleLogout(); }}>
                                     sign out
-                </a>
+                                </a>
                             </div>
                             <div>
-                                <a className="settings" href="#" onClick={() => this.props.togglePopup()}>settings</a>
+                                <a className="settings" href="#" onClick={(e) => { e.preventDefault(); this.props.togglePopup(); }}>settings</a>
                             </div>
                         </div>
                         {this.props.children}
                     </div>
                     : null}
-                {!authed
+                {!isLoggedIn
                     ? <div className="login-links-panel">
                         <h2>Gateway Watcher</h2>
                         <p>Please click below and sign in using your Medic Mobile account.</p>
-                        <div
-                            onClick={() => this.client.auth.loginWithRedirect(new GoogleRedirectCredential())}
-                            className="signin-button"
-                        >
-                            <svg
-                                version="1.1"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="18px"
-                                height="18px"
-                                viewBox="0 0 48 48"
-                            >
-                                <g>
-                                    <path
-                                        fill="#EA4335"
-                                        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-                                    />
-                                    <path
-                                        fill="#4285F4"
-                                        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-                                    />
-                                    <path
-                                        fill="#FBBC05"
-                                        d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-                                    />
-                                    <path
-                                        fill="#34A853"
-                                        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-                                    />
-                                    <path fill="none" d="M0 0h48v48H0z" />
-                                </g>
-                            </svg>
-                            <span className="signin-button-text">Sign in with Google</span>
-                        </div>
+                        {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+                        <div id="google-signin-button" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}></div>
                     </div>
                     : null}
             </div>

@@ -136,18 +136,31 @@ class Dashboard extends Component {
         }
 
         else {
-            if (!this.client.auth.isLoggedIn) {
+            if (!this.props.isLoggedIn || !this.props.email) {
                 return this.loadGatewayUnavailableStatus();
             }
             let obj = this;
-            return this.client.callFunction("getAdminInstancesForUser").then(docs => {
-                //console.log(`Balance: ${JSON.stringify(docs)}`);
-                const pinnedGateways = JSON.parse(localStorage.getItem('pinnedGateways')) || [];
-                obj.setState({ adminGateways: docs, pinnedGateways: pinnedGateways.concat(docs), requestPending: false });
+            const url = `${this.props.apiUrl}/api/gateways?email=${encodeURIComponent(this.props.email)}&admin=true`;
+            return fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${this.props.apiKey}`
+                }
             })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(docs => {
+                    //console.log(`Admin instances: ${JSON.stringify(docs)}`);
+                    const adminIds = docs.map(gw => gw.id);
+                    const pinnedGateways = JSON.parse(localStorage.getItem('pinnedGateways')) || [];
+                    obj.setState({ adminGateways: adminIds, pinnedGateways: pinnedGateways.concat(adminIds), requestPending: false });
+                })
 
                 .catch(ex => {
-                    console.error("Error while loading user instances: " + ex.message);
+                    console.error("Error while loading admin instances: " + ex.message);
                     this.showErrorPopup();
                 });
         }
@@ -194,16 +207,28 @@ class Dashboard extends Component {
         }
 
         else {
-            if (!this.client.auth.isLoggedIn) {
+            if (!this.props.isLoggedIn || !this.props.email) {
                 return this.loadGatewayUnavailableStatus();
             }
             let obj = this;
-            return this.client.callFunction("listGateways").then(docs => {
-                obj.setState({ gatewayNumbers: docs, requestPending: false });
+            const url = `${this.props.apiUrl}/api/gateways?email=${encodeURIComponent(this.props.email)}`;
+            return fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${this.props.apiKey}`
+                }
             })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(docs => {
+                    obj.setState({ gatewayNumbers: docs, requestPending: false });
+                })
 
                 .catch(ex => {
-                    console.error("Error while loading status: " + ex.message);
+                    console.error("Error while loading gateways: " + ex.message);
                     this.showErrorPopup();
                 });
         }
@@ -246,17 +271,47 @@ class Dashboard extends Component {
         }
 
         else {
-            if (!this.client.auth.isLoggedIn) {
+            if (!this.props.isLoggedIn || !this.props.email) {
                 return this.loadGatewayUnavailableStatus();
             }
             let obj = this;
-            return this.client.callFunction("getRecentStatusForUserContext").then(docs => {
-                //console.log(`Balance: ${JSON.stringify(docs)}`);
-                docs.sort(function (a, b) { return (a._id.toLowerCase() > b._id.toLowerCase()) ? 1 : ((b._id.toLowerCase() > a._id.toLowerCase()) ? -1 : 0) });
-                obj.setState({ gateways: docs, requestPending: false });
-                obj.setState({ loading: false, lastUpdate: new Date(), maxBalance: getMaxBalanceFromData(docs) });
-
+            const url = `${this.props.apiUrl}/api/status?email=${encodeURIComponent(this.props.email)}`;
+            return fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${this.props.apiKey}`
+                }
             })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(docs => {
+                    //console.log(`Balance: ${JSON.stringify(docs)}`);
+                    // Convert date strings to Date objects
+                    docs = docs.map(doc => {
+                        return {
+                            ...doc,
+                            date: doc.date ? new Date(doc.date) : null,
+                            balanceDate: doc.balanceDate ? new Date(doc.balanceDate) : null,
+                            smsPackInfoDate: doc.smsPackInfoDate ? new Date(doc.smsPackInfoDate) : null,
+                            lastSMSInDate: doc.lastSMSInDate ? new Date(doc.lastSMSInDate) : null,
+                            balanceTrend: Array.isArray(doc.balanceTrend) ? doc.balanceTrend.map(item => ({
+                                ...item,
+                                date: item.date ? new Date(item.date) : null
+                            })) : [],
+                            smsPackTrend: Array.isArray(doc.smsPackTrend) ? doc.smsPackTrend.map(item => ({
+                                ...item,
+                                date: item.date ? new Date(item.date) : null
+                            })) : []
+                        };
+                    });
+                    docs.sort(function (a, b) { return (a._id.toLowerCase() > b._id.toLowerCase()) ? 1 : ((b._id.toLowerCase() > a._id.toLowerCase()) ? -1 : 0) });
+                    obj.setState({ gateways: docs, requestPending: false });
+                    obj.setState({ loading: false, lastUpdate: new Date(), maxBalance: getMaxBalanceFromData(docs) });
+
+                })
 
                 .catch(ex => {
                     console.error("Error while loading status: " + ex.message);
@@ -294,9 +349,6 @@ class Dashboard extends Component {
             pinnedGateways: [],
             gatewayNumbers: null
         };
-        this.client = props.client;
-        this.gateways = props.gateways;
-        this.gatewayNumbers = props.gatewayNumbers;
         this.loadUserAdminInstances = this.loadUserAdminInstances.bind(this);
         this.loadGatewayStatus = this.loadGatewayStatus.bind(this);
         this.loadGatewayNumbers = this.loadGatewayNumbers.bind(this);
@@ -319,22 +371,21 @@ class Dashboard extends Component {
         });
     }
 
-    componentWillMount() {
-        //this.loadGatewayStatus();
-    }
-
     componentDidMount() {
         //console.log(sampleData.oldData);// Load pinned gateways from local storage
         const pinnedGateways = JSON.parse(localStorage.getItem('pinnedGateways')) || [];
         this.setState({ pinnedGateways });
 
-        this.loadUserAdminInstances();
-        this.loadGatewayNumbers();
+        // Only load data if email is available
+        if (this.props.email && this.props.isLoggedIn) {
+            this.loadUserAdminInstances();
+            this.loadGatewayNumbers();
 
-        this.loadGatewayStatus().then(_ => {
-            // Re-fetch every 10 minutes
-            this.interval = setInterval(this.loadGatewayStatus, updateDurationSec * 1000);
-        });
+            this.loadGatewayStatus().then(_ => {
+                // Re-fetch every 10 minutes
+                this.interval = setInterval(this.loadGatewayStatus, updateDurationSec * 1000);
+            });
+        }
 
         setInterval(() => {
             this.setState({
@@ -342,6 +393,19 @@ class Dashboard extends Component {
             })
         }, 3000)
 
+    }
+
+    componentDidUpdate(prevProps) {
+        // If email just became available, load the data
+        if (!prevProps.email && this.props.email && this.props.isLoggedIn) {
+            this.loadUserAdminInstances();
+            this.loadGatewayNumbers();
+
+            this.loadGatewayStatus().then(_ => {
+                // Re-fetch every 10 minutes
+                this.interval = setInterval(this.loadGatewayStatus, updateDurationSec * 1000);
+            });
+        }
     }
 
     setPending() {
@@ -443,7 +507,7 @@ class Dashboard extends Component {
                 </div>
             </div>
         );
-        return this.client.auth.isLoggedIn ? loggedInResult : null;
+        return this.props.isLoggedIn ? loggedInResult : null;
     }
 
 }

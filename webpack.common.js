@@ -2,6 +2,7 @@ const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+require('dotenv').config();
 
 module.exports = {
 	entry: {
@@ -14,8 +15,10 @@ module.exports = {
 			template: __dirname + '/src/index.html'
 		}),
 		new webpack.DefinePlugin({
-			WATCHGATE_APP_ID: JSON.stringify(process.env.WATCHGATE_APP_ID)
-		})
+			'process.env.API_URL': JSON.stringify(process.env.API_URL),
+				'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
+				'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID)
+			})
 	],
 	output: {
 		path: path.resolve(__dirname, 'dist'),

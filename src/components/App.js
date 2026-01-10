@@ -4,26 +4,8 @@ import Dashboard from './Dashboard';
 import Settings from './Settings';
 import '../../static/watchgate.scss';
 
-import {
-    Stitch,
-    RemoteMongoClient
-} from "mongodb-stitch-browser-sdk";
-
-
-//TODO: add your MongoDB stitch app id here
-let appId = WATCHGATE_APP_ID;
-
-const client = Stitch.initializeDefaultAppClient(appId);
-
-const db = client.getServiceClient(RemoteMongoClient.factory,
-    "mongodb-atlas").db('watchgate');
-
-let gateways = db.collection("gateways");
-//let status = db.collection("status");
-//let users = db.collection("users");
-
-//let props = { client, gateways, status, users, settings, toggleBalanceTrend };
-//console.log(document.getElementById('app'));
+const apiUrl = process.env.API_URL;
+const apiKey = process.env.API_KEY;
 
 
 class App extends Component {
@@ -46,10 +28,10 @@ class App extends Component {
         this.state = {
             settings: { showBalanceTrend, safeBalance, notificationURL },
             showPopup: false,
-            username: 'Unregistered user'
+            username: 'Unregistered user',
+            email: null,
+            isLoggedIn: false
         };
-        this.client = client;
-        this.gateways = gateways;
         this.applySettings = this.applySettings.bind(this);
         this.toggleBalanceTrend = this.toggleBalanceTrend.bind(this);
         this.handleSafeBalanceChange = this.handleSafeBalanceChange.bind(this);
@@ -60,6 +42,21 @@ class App extends Component {
         this.setState({
             showPopup: !this.state.showPopup
         });
+    }
+
+    componentDidMount() {
+        // Sync with stored auth state from localStorage
+        const storedEmail = localStorage.getItem('userEmail');
+        const storedName = localStorage.getItem('userName');
+        const authToken = localStorage.getItem('authToken');
+
+        if (authToken && storedEmail && storedName) {
+            this.setState({
+                email: storedEmail,
+                username: storedName,
+                isLoggedIn: true
+            });
+        }
     }
 
     applySettings(newSettings) {
@@ -97,13 +94,24 @@ class App extends Component {
         this.setState({ username: name });
     }
 
+    updateUserEmail(email) {
+        this.setState({ email });
+    }
+
+    setIsLoggedIn(isLoggedIn) {
+        this.setState({ isLoggedIn });
+    }
+
     render() {
         return (
             <div>
                 <AuthControls
-                    client={this.client}
                     togglePopup={this.togglePopup.bind(this)}
                     updateUserName={this.updateUserName.bind(this)}
+                    updateUserEmail={this.updateUserEmail.bind(this)}
+                    setIsLoggedIn={this.setIsLoggedIn.bind(this)}
+                    apiUrl={apiUrl}
+                    apiKey={apiKey}
                 >
 
                     {this.state.showPopup ?
@@ -121,10 +129,12 @@ class App extends Component {
                     }
                 </AuthControls>
                 <Dashboard
-                    client={this.client}
-                    gateways={this.gateways}
                     settings={this.state.settings}
-                    username={this.state.username} />
+                    username={this.state.username}
+                    email={this.state.email}
+                    isLoggedIn={this.state.isLoggedIn}
+                    apiUrl={apiUrl}
+                    apiKey={apiKey} />
             </div>
         );
     }
