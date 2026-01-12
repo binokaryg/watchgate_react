@@ -19,8 +19,13 @@ library.add(faCoins, faPlug, faWifi, faBatteryFull, faThermometerHalf, faExchang
 class Dashboard extends Component {
 
   requestFCM = (instance, task) => {
-    let request = `${this.props.settings.notificationURL}?topic=${instance}&title=${task}&body=${encodeURI("Requested by " + this.props.username)}`;
-    //console.log(request);
+    const notificationURL = this.props.settings.notificationURL;
+    if (!notificationURL) {
+      alert('Error: Notification URL not configured');
+      return;
+    }
+    
+    let request = `${notificationURL}?topic=${instance}&title=${task}&body=${encodeURI("Requested by " + this.props.username)}`;
     let validURLRegex = '^(https?:\\/\\/)?' + // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
       '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
@@ -34,9 +39,14 @@ class Dashboard extends Component {
           console.log(res);
           alert(res.data);
         })
+        .catch(err => {
+          console.error('FCM Error:', err);
+          alert(`Error sending message: ${err.message}`);
+        })
     }
     else {
       console.log(`URL validation failed: ${request}`)
+      alert(`Invalid notification URL: ${request}`);
     }
   }
   getColorForPercentage(percent) {
@@ -409,13 +419,22 @@ class Dashboard extends Component {
 
   componentDidUpdate(prevProps) {
     // If email just became available, load the data
-    if (!prevProps.email && this.props.email && this.props.isLoggedIn) {
+    if ((!prevProps.email && this.props.email && this.props.isLoggedIn) || 
+        (!prevProps.isLoggedIn && this.props.isLoggedIn && this.props.email)) {
+      console.log('componentDidUpdate: Loading data for email:', this.props.email);
       this.loadUserAdminInstances();
       this.loadGatewayNumbers();
 
       this.loadGatewayStatus().then(_ => {
         // Re-fetch every 10 minutes
         this.interval = setInterval(this.loadGatewayStatus, updateDurationSec * 1000);
+      }).catch(err => {
+        console.error('Initial load failed:', err);
+        // Retry after 2 seconds
+        setTimeout(() => {
+          console.log('Retrying initial load...');
+          this.loadGatewayStatus();
+        }, 2000);
       });
     }
   }
@@ -492,7 +511,7 @@ class Dashboard extends Component {
             ? <div className="list-empty-label">Loading...</div>
             : this.state.gateways.map(gateway => {
               const gatewayId = gateway._id.toLowerCase();
-              const gatewayNumber = this.state.gatewayNumbers ? this.state.gatewayNumbers[gatewayId] : null;
+              const gatewayNumber = this.state.gatewayNumbers ? stripCountryCode(this.state.gatewayNumbers[gatewayId]) : null;
               if (!this.state.pinnedGateways.includes(gatewayId) && !this.state.adminGateways.includes(gatewayId)) {
                 return (
                   <GatewayWidgetContainer

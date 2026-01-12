@@ -17,7 +17,8 @@ module.exports = {
 		new webpack.DefinePlugin({
 			'process.env.API_URL': JSON.stringify(process.env.API_URL),
 				'process.env.API_KEY': JSON.stringify(process.env.API_KEY),
-				'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID)
+				'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID),
+				'process.env.FCM_NOTIFICATION_URL': JSON.stringify(process.env.FCM_NOTIFICATION_URL)
 			})
 	],
 	output: {

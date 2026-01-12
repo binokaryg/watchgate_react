@@ -1,13 +1,18 @@
-version: '3.8'
-
 services:
-  watchgate:
-    container_name: watchgate
+  watchgate-frontend:
+    container_name: watchgate-frontend
     build:
       context: .
       dockerfile: Dockerfile
       args:
         API_URL: ${API_URL}
         API_KEY: ${API_KEY}
-    ports:
-      - 3000:80
+    expose:
+      - 80
+    networks:
+      - openmrs_network
+    restart: unless-stopped
+
+networks:
+  openmrs_network:
+    external: true

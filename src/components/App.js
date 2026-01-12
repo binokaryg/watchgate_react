@@ -13,10 +13,13 @@ class App extends Component {
         super(props);
         let showBalanceTrend = true;
         let safeBalance = 3000;
-        let notificationURL = '';
+        let notificationURL = process.env.FCM_NOTIFICATION_URL || '';
         try {
             showBalanceTrend = localStorage.getItem("showBalanceTrend") == "false" ? false : true;
-            notificationURL = localStorage.getItem("notificationURL");
+            const storedNotificationURL = localStorage.getItem("notificationURL");
+            if (storedNotificationURL) {
+                notificationURL = storedNotificationURL;
+            }
             safeBalance = parseInt(localStorage.getItem("safeBalance"));
             if (isNaN(safeBalance) || safeBalance == null) {
                 safeBalance = 3000;
